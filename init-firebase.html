@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicializar Mi Diario - Firebase</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #7BC2A8 0%, #B8A7D4 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        h1 {
+            color: #7BC2A8;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6C757D;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #F8F9FA;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #7BC2A8;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #343A40;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #DEE2E6;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #7BC2A8;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #68A892;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(123, 194, 168, 0.3);
+        }
+        button:disabled {
+            background: #ADB5BD;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .success {
+            background: #D4EDDA;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #C3E6CB;
+        }
+        .error {
+            background: #F8D7DA;
+            color: #721C24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #F5C6CB;
+        }
+        .info {
+            background: #D1ECF1;
+            color: #0C5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #BEE5EB;
+        }
+        code {
+            background: #E9ECEF;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Inicializar Mi Diario</h1>
+        <p class="subtitle">Configuración inicial de Firebase y creación de usuario administrador</p>
+
+        <!-- PASO 1: Configurar Firebase -->
+        <div class="step">
+            <h3>📋 Paso 1: Configurar Firebase</h3>
+            <p>Pega tu configuración de Firebase (firebaseConfig):</p>
+            <textarea id="firebaseConfig" rows="10" placeholder='{
+  "apiKey": "AIza...",
+  "authDomain": "tu-proyecto.firebaseapp.com",
+  "projectId": "tu-proyecto-id",
+  "storageBucket": "tu-proyecto.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123:web:abc",
+  "measurementId": "G-ABC123"
+}'></textarea>
+            <button onclick="initFirebase()">Inicializar Firebase</button>
+            <div id="firebaseStatus"></div>
+        </div>
+
+        <!-- PASO 2: Crear Usuario Admin -->
+        <div class="step">
+            <h3>👤 Paso 2: Crear Usuario Administrador</h3>
+            <div class="info">
+                <strong>Usuario predeterminado:</strong><br>
+                Email: <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddbcb9b0b4b39db3b8b1aea4aea9b8b0aef3beb2b0">[email&#160;protected]</a></code><br>
+                Password: <code>123456789AiXmDy</code>
+            </div>
+            <input type="email" id="adminEmail" value="admin@nelsystems.com" placeholder="Email del admin">
+            <input type="password" id="adminPassword" value="123456789AiXmDy" placeholder="Contraseña">
+            <input type="text" id="adminName" value="Administrador" placeholder="Nombre">
+            <button onclick="createAdminUser()" id="createAdminBtn" disabled>Crear Usuario Admin</button>
+            <div id="adminStatus"></div>
+        </div>
+
+        <!-- PASO 3: Verificar -->
+        <div class="step">
+            <h3>✅ Paso 3: Verificar</h3>
+            <button onclick="verifySetup()" id="verifyBtn" disabled>Verificar Configuración</button>
+            <div id="verifyStatus"></div>
+        </div>
+
+        <div class="info">
+            <strong>💡 Importante:</strong> Después de crear el usuario admin, puedes cerrar esta página y usar la aplicación normal en <code>localhost:3000</code>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        let app, auth, db;
+
+        window.initFirebase = async function() {
+            const configText = document.getElementById('firebaseConfig').value;
+            const statusDiv = document.getElementById('firebaseStatus');
+            
+            try {
+                const config = JSON.parse(configText);
+                app = initializeApp(config);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                statusDiv.innerHTML = '<div class="success">✅ Firebase inicializado correctamente</div>';
+                document.getElementById('createAdminBtn').disabled = false;
+                document.getElementById('verifyBtn').disabled = false;
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        window.createAdminUser = async function() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const name = document.getElementById('adminName').value;
+            const statusDiv = document.getElementById('adminStatus');
+            const btn = document.getElementById('createAdminBtn');
+
+            if (!email || !password) {
+                statusDiv.innerHTML = '<div class="error">❌ Por favor completa email y contraseña</div>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Creando...';
+
+            try {
+                // Crear usuario en Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Crear documento en Firestore
+                await setDoc(doc(db, 'users', user.uid), {
+                    email: user.email,
+                    displayName: name,
+                    role: 'admin',
+                    createdAt: new Date().toISOString(),
+                    points: 0,
+                    level: 'seed',
+                    language: 'es',
+                    quotePreference: 'motivational'
+                });
+
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ ¡Usuario admin creado exitosamente!</strong><br><br>
+                        <strong>Detalles:</strong><br>
+                        Email: <code>${user.email}</code><br>
+                        UID: <code>${user.uid}</code><br>
+                        Rol: <span class="highlight">admin</span><br><br>
+                        Ahora puedes usar la app en <code>localhost:3000</code>
+                    </div>
+                `;
+                btn.textContent = '✅ Usuario Creado';
+            } catch (error) {
+                let errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Este email ya está registrado. Usa otro email o inicia sesión en la app.';
+                }
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${errorMessage}</div>`;
+                btn.disabled = false;
+                btn.textContent = 'Crear Usuario Admin';
+            }
+        }
+
+        window.verifySetup = async function() {
+            const statusDiv = document.getElementById('verifyStatus');
+            
+            try {
+                // Verificar que Firebase esté inicializado
+                if (!auth || !db) {
+                    throw new Error('Firebase no está inicializado');
+                }
+
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Verificación Completada</strong><br><br>
+                        <strong>Estado:</strong><br>
+                        • Firebase: ✅ Inicializado<br>
+                        • Authentication: ✅ Configurado<br>
+                        • Firestore: ✅ Configurado<br><br>
+                        <strong>Siguiente paso:</strong> Ve a Firebase Console → Firestore Database para ver la colección 'users' c

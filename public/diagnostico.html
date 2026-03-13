@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico - Mi Diario</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #7BC2A8;
+      margin-bottom: 20px;
+    }
+    
+    .test {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    
+    .test h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    
+    button {
+      background: #7BC2A8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    
+    button:hover {
+      background: #6BA898;
+    }
+    
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Diagnóstico Mi Diario</h1>
+    
+    <div class="info">
+      <strong>Instrucciones:</strong><br>
+      Haz clic en "Ejecutar Diagnóstico" para verificar la configuración de tu app.
+    </div>
+    
+    <button onclick="runDiagnostics()">🔍 Ejecutar Diagnóstico</button>
+    <button onclick="clearCache()">🗑️ Limpiar Cache</button>
+    <button onclick="unregisterSW()">❌ Desregistrar Service Worker</button>
+    
+    <div id="results"></div>
+  </div>
+
+  <script>
+    async function runDiagnostics() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<h2>Ejecutando tests...</h2>';
+      
+      let html = '';
+      
+      // Test 1: URL Actual
+      html += `
+        <div class="test">
+          <h3>1. URL Actual</h3>
+          <div class="result info">
+            <strong>URL:</strong> ${window.location.href}<br>
+            <strong>Origin:</strong> ${window.location.origin}<br>
+            <strong>Pathname:</strong> ${window.location.pathname}
+          </div>
+        </div>
+      `;
+      
+      // Test 2: Verificar Manifest
+      html += `<div class="test"><h3>2. Verificando Manifest.json</h3>`;
+      try {
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        if (manifestLink) {
+          const manifestUrl = manifestLink.href;
+          const response = await fetch(manifestUrl);
+          const manifest = await response.json();
+          
+          html += `<div class="result success">✅ Manifest encontrado</div>`;
+          html += `<pre>${JSON.stringify(manifest, null, 2)}</pre>`;
+        } else {
+          html += `<div class="result error">❌ Manifest no encontrado en HTML</div>`;
+        }
+      } catch (error) {
+        html += `<div class="result error">❌ Error cargando manifest: ${error.message}</div>`;
+      }
+      html += `</div>`;
+      
+      // Test 3: Verificar Service Worker
+      html += `<div class="test"><h3>3. Service Worker</h3>`;
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          if (registrations.length > 0) {
+            html += `<div class="result success">✅ Service Worker registrado (${registrations.length})</div>`;
+            registrations.forEach((reg, index) => {
+              html += `<div class="result info">SW ${index + 1}: ${reg.scope}</div>`;
+            });
+          } else {
+            html += `<div class="result warning">⚠️ No hay Service Workers registrados</div>`;
+          }
+        } catch (error) {
+          html += `<div class="result error">❌ Error: ${error.message}</div>`;
+        }
+      } else {
+        html += `<div class="result error">❌ Service Worker no soportado</div>`;
+      }
+      html += `</div>`;
+      
+      // Test 4: Verificar Icono
+      html += `<div class="test"><h3>4. Verificando Icono (logo512.png)</h3>`;
+      try {
+        const iconUrl = `${window.location.origin}/logo512.png`;
+        const response = await fetch(iconUrl, { method: 'HEAD' });
+        if (response.ok) {
+          html += `<div class="result success">✅ Icono accesible</div>`;
+          html += `<img src="${iconUrl}" style="max-width: 100px; margin-top: 10px;">`;
+        } else {
+          html += `<div class="result error">❌ Icono no encontrado (${response.status})</div>`;
+        }
+      } catch (error) {
+        html += `<div class="result error">❌ Error cargando icono: ${error.message}</div>`;
+      }
+      html += `</div>`;
+      
+      // Test 5: Variables de Entorno Firebase
+      html += `<div class="test"><h3>5. Configuración Firebase</h3>`;
+      const firebaseVars = [
+        'REACT_APP_FIREBASE_API_KEY',
+        'REACT_APP_FIREBASE_AUTH_DOMAIN',
+        'REACT_APP_FIREBASE_PROJECT_ID'
+      ];
+      
+      // En producción, estas variables no son accesibles directamente desde window
+      // Solo podemos verificar si Firebase se inicializó
+      html += `<div class="result info">ℹ️ Las variables de Firebase no son accesibles desde el navegador por seguridad.<br>
+                Verifica que estén configuradas en tu servidor/Vercel.</div>`;
+      html += `</div>`;
+      
+      // Test 6: Conectividad
+      html += `<div class="test"><h3>6. Estado de Red</h3>`;
+      html += `<div class="result ${navigator.onLine ? 'success' : 'error'}">
+                ${navigator.onLine ? '✅ Conectado a Internet' : '❌ Sin conexión'}
+               </div>`;
+      html += `</div>`;
+      
+      // Test 7: Dispositivo
+      html += `<div class="test"><h3>7. Información del Dispositivo</h3>`;
+      html += `<div class="result info">
+                <strong>User Agent:</strong> ${navigator.userAgent}<br>
+                <strong>Idioma:</strong> ${navigator.language}<br>
+                <strong>Plataforma:</strong> ${navigator.platform}<br>
+                <strong>Viewport:</strong> ${window.innerWidth}x${window.innerHeight}
+               </div>`;
+      html += `</div>`;
+      
+      // Test 8: Cache Storage
+      html += `<div class="test"><h3>8. Cache Storage</h3>`;
+      if ('caches' in window) {
+        try {
+          const cacheNames = await caches.keys();
+          if (cacheNames.length > 0) {
+            html += `<div class="result success">✅ Caches encontrados: ${cacheNames.length}</div>`;
+            cacheNames.forEach(name => {
+              html += `<div class="result info">Cache: ${name}</div>`;
+            });
+          } else {
+            html += `<div class="result warning">⚠️ No hay caches</div>`;
+          }
+        } catch (error) {
+          html += `<div class="result error">❌ Error: ${error.message}</div>`;
+        }
+      } else {
+        html += `<div class="result error">❌ Cache API no soportada</div>`;
+      }
+      html += `</div>`;
+      
+      resultsDiv.innerHTML = html;
+    }
+    
+    async function clearCache() {
+      if ('caches' in window) {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+          alert('✅ Cache limpiado exitosamente.\n\nRecarga la página para ver cambios.');
+        } catch (error) {
+          alert('❌ Error limpiando cache: ' + error.message);
+        }
+      } else {
+        alert('❌ Cache API no soportada en este navegador');
+      }
+    }
+    
+    async function unregisterSW() {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map(reg => reg.unregister()));
+          alert(`✅ ${registrations.length} Service Worker(s) desregistrado(s).\n\nRecarga la página para registrar la versión nueva.`);
+        } catch (error) {
+          alert('❌ Error: ' + error.message);
+        }
+      } else {
+        alert('❌ Service Worker no soportado');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ⚠️ REGLAS TEMPORALES PARA DESARROLLO INICIAL
+    // Estas reglas son MÁS PERMISIVAS para permitir crear los primeros usuarios
+    // Una vez que tengas usuarios creados, cambia a firestore.rules (reglas de producción)
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Users collection - PERMISIVO PARA CREAR PRIMEROS USUARIOS
+    match /users/{userId} {
+      // Permitir lectura y escritura para usuarios autenticados
+      allow read, write: if isAuthenticated();
+      
+      // Permitir crear usuario durante el registro
+      allow create: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Diary entries
+    match /diaryEntries/{entryId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // Self-care checklist
+    match /selfcare/{checklistId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // Shared reports
+    match /sharedReports/{reportId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "app": {
+    "name": "My Diary",
+    "tagline": "Your emotional wellness companion"
+  },
+  "nav": {
+    "home": "Home",
+    "diary": "Diary",
+    "selfcare": "Self-Care",
+    "dashboard": "Progress",
+    "bible": "Bible",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "diary": {
+    "title": "My Emotional Diary",
+    "newEntry": "New Entry",
+    "howWasYourDay": "How was your day?",
+    "emotionalTrafficLight": "Emotional Traffic Light",
+    "green": "Green - I feel good",
+    "yellow": "Yellow - I'm okay",
+    "red": "Red - I need support",
+    "intensity": "Emotional intensity",
+    "emotions": "Today's emotions",
+    "whatHappened": "What happened today?",
+    "thought": "Thought that appeared",
+    "kinderView": "Kinder way to see it",
+    "difficultImpulses": "Difficult impulses (optional)",
+    "save": "Save entry",
+    "viewEntries": "View entries"
+  },
+  "emotions": {
+    "happy": "Happy",
+    "sad": "Sad",
+    "anxious": "Anxious",
+    "calm": "Calm",
+    "angry": "Angry",
+    "grateful": "Grateful",
+    "hopeful": "Hopeful",
+    "lonely": "Lonely",
+    "proud": "Proud",
+    "frustrated": "Frustrated"
+  },
+  "selfcare": {
+    "title": "Daily Self-Care",
+    "checklist": "Self-care checklist",
+    "makeBed": "Make bed",
+    "shower": "Shower",
+    "brushTeeth": "Brush teeth",
+    "eatWell": "Eat well",
+    "sleepEnough": "Sleep enough",
+    "goOutside": "Go outside",
+    "talkToSomeone": "Talk to someone",
+    "listenMusic": "Listen to music",
+    "writeDiary": "Write in diary",
+    "totalPoints": "Total points",
+    "todayPoints": "Today's points"
+  },
+  "dashboard": {
+    "title": "Your Progress",
+    "level": "Level",
+    "points": "Points",
+    "emotionalTrend": "Emotional trend",
+    "habitsCompleted": "Habits completed",
+    "streak": "Day streak",
+    "exportPDF": "Export PDF report"
+  },
+  "levels": {
+    "seed": "Seed",
+    "sprout": "Sprout",
+    "youngTree": "Young Tree",
+    "forest": "Forest"
+  },
+  "bible": {
+    "title": "Bible",
+    "search": "Search verse",
+    "book": "Book",
+    "chapter": "Chapter",
+    "verse": "Verse",
+    "read": "Read"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "highContrast": "High contrast",
+    "accessibility": "Accessibility",
+    "voiceControl": "Voice control",
+    "screenReader": "Screen reader",
+    "textSize": "Text size",
+    "dailyQuote": "Daily quote",
+    "motivational": "Motivational",
+    "biblical": "Biblical"
+  },
+  "ai": {
+    "supportMessage": "Support message",
+    "analyzing": "Analyzing your progress...",
+    "disclaimer": "This is a support message, not a medical diagnosis."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "stats": "Statistics",
+    "createUser": "Create user",
+    "deleteUser": "Delete user",
+    "expirationDate": "Expiration date"
+  }
+}

@@ -1,0 +1,132 @@
+.bible-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-icon {
+  color: var(--accent-primary);
+}
+
+.bible-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.search-section,
+.selection-section,
+.info-section {
+  padding: var(--spacing-xl);
+}
+
+.search-section h3,
+.selection-section h3,
+.info-section h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.search-bar {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.search-bar .input {
+  flex: 1;
+}
+
+.search-results {
+  margin-top: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.verse-result {
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: var(--radius-sm);
+}
+
+.verse-reference {
+  display: block;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.verse-text {
+  font-family: var(--font-handwriting);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.chapter-content {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.chapter-content h4 {
+  margin-bottom: var(--spacing-md);
+  color: var(--accent-primary);
+  text-align: center;
+}
+
+.bible-text {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+.verse {
+  font-family: var(--font-handwriting);
+  font-size: 1.125rem;
+  line-height: 2;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.verse-number {
+  display: inline-block;
+  min-width: 2em;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-right: var(--spacing-xs);
+}
+
+.info-section ul {
+  list-style-position: inside;
+  margin-top: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.info-section li {
+  margin-bottom: var(--spacing-xs);
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+  }
+}

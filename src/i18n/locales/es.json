@@ -1,0 +1,119 @@
+{
+  "app": {
+    "name": "Mi Diario",
+    "tagline": "Tu compañero de bienestar emocional"
+  },
+  "nav": {
+    "home": "Inicio",
+    "diary": "Diario",
+    "selfcare": "Autocuidado",
+    "dashboard": "Progreso",
+    "bible": "Biblia",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?"
+  },
+  "diary": {
+    "title": "Mi Diario Emocional",
+    "newEntry": "Nueva entrada",
+    "howWasYourDay": "¿Cómo estuvo tu día?",
+    "emotionalTrafficLight": "Semáforo emocional",
+    "green": "Verde - Me siento bien",
+    "yellow": "Amarillo - Estoy regular",
+    "red": "Rojo - Necesito apoyo",
+    "intensity": "Intensidad emocional",
+    "emotions": "Emociones del día",
+    "whatHappened": "¿Qué pasó hoy?",
+    "thought": "Pensamiento que apareció",
+    "kinderView": "Forma más amable de verlo",
+    "difficultImpulses": "Impulsos difíciles (opcional)",
+    "save": "Guardar entrada",
+    "viewEntries": "Ver entradas"
+  },
+  "emotions": {
+    "happy": "Feliz",
+    "sad": "Triste",
+    "anxious": "Ansioso/a",
+    "calm": "Calmado/a",
+    "angry": "Enojado/a",
+    "grateful": "Agradecido/a",
+    "hopeful": "Esperanzado/a",
+    "lonely": "Solo/a",
+    "proud": "Orgulloso/a",
+    "frustrated": "Frustrado/a"
+  },
+  "selfcare": {
+    "title": "Autocuidado Diario",
+    "checklist": "Lista de autocuidado",
+    "makeBed": "Tender la cama",
+    "shower": "Bañarse",
+    "brushTeeth": "Cepillarse los dientes",
+    "eatWell": "Comer bien",
+    "sleepEnough": "Dormir suficiente",
+    "goOutside": "Salir un rato",
+    "talkToSomeone": "Hablar con alguien",
+    "listenMusic": "Escuchar música",
+    "writeDiary": "Escribir en el diario",
+    "totalPoints": "Puntos totales",
+    "todayPoints": "Puntos de hoy"
+  },
+  "dashboard": {
+    "title": "Tu Progreso",
+    "level": "Nivel",
+    "points": "Puntos",
+    "emotionalTrend": "Tendencia emocional",
+    "habitsCompleted": "Hábitos completados",
+    "streak": "Racha de días",
+    "exportPDF": "Exportar reporte PDF"
+  },
+  "levels": {
+    "seed": "Semilla",
+    "sprout": "Brote",
+    "youngTree": "Árbol joven",
+    "forest": "Bosque"
+  },
+  "bible": {
+    "title": "Biblia",
+    "search": "Buscar versículo",
+    "book": "Libro",
+    "chapter": "Capítulo",
+    "verse": "Versículo",
+    "read": "Leer"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "highContrast": "Alto contraste",
+    "accessibility": "Accesibilidad",
+    "voiceControl": "Control por voz",
+    "screenReader": "Lector de pantalla",
+    "textSize": "Tamaño de texto",
+    "dailyQuote": "Frase diaria",
+    "motivational": "Motivacional",
+    "biblical": "Bíblica"
+  },
+  "ai": {
+    "supportMessage": "Mensaje de apoyo",
+    "analyzing": "Analizando tu progreso...",
+    "disclaimer": "Este es un mensaje de apoyo, no un diagnóstico médico."
+  },
+  "admin": {
+    "title": "Panel de Administración",
+    "users": "Usuarios",
+    "stats": "Estadísticas",
+    "createUser": "Crear usuario",
+    "deleteUser": "Eliminar usuario",
+    "expirationDate": "Fecha de expiración"
+  }
+}

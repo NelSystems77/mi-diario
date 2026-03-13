@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isTherapistOrAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['therapist', 'admin'];
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Permitir crear usuario durante el registro inicial
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can read and write their own data
+      allow read, write: if isOwner(userId);
+      
+      // ✅ ADMINS pueden leer TODOS los usuarios
+      allow read: if isAdmin();
+      
+      // ✅ ADMINS pueden crear y eliminar usuarios
+      allow create, delete: if isAdmin();
+      
+      // ✅ ADMINS pueden actualizar usuarios
+      allow update: if isAdmin();
+    }
+    
+    // Diary entries
+    match /diaryEntries/{entryId} {
+      // Permitir crear entrada
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Users can only access their own entries
+      allow read, write: if isAuthenticated() && 
+                            resource.data.userId == request.auth.uid;
+      
+      // Admins can read all entries (for statistics)
+      allow read: if isAdmin();
+    }
+    
+    // Self-care checklist
+    match /selfcare/{checklistId} {
+      // Permitir crear checklist
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Users can only access their own checklists
+      allow read, write: if isAuthenticated() && 
+                            resource.data.userId == request.auth.uid;
+      
+      // Admins can read for statistics
+      allow read: if isAdmin();
+    }
+    
+    // Shared reports (for therapist access)
+    match /sharedReports/{reportId} {
+      // Users can share their own reports
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Users can read their own shared reports
+      allow read: if isAuthenticated() && 
+                    resource.data.userId == request.auth.uid;
+      
+      // Therapists can read reports shared with them
+      allow read: if isTherapistOrAdmin() && 
+                    resource.data.therapistId == request.auth.uid;
+      
+      // Admins can read all
+      allow read: if isAdmin();
+    }
+  }
+}
