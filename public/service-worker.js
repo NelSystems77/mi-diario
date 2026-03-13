@@ -10,6 +10,7 @@ const urlsToCache = [
 const NEVER_CACHE = [
   'firebaseio.com',
   'googleapis.com',
+  'gstatic.com', // Corregido: añadida coma
   'firebaseapp.com',
   'google.com/firestore',
   'identitytoolkit.googleapis.com',
@@ -27,7 +28,6 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        // Solo cachear archivos estáticos básicos
         return cache.addAll(urlsToCache).catch(err => {
           console.log('Cache addAll error:', err);
         });
@@ -36,17 +36,17 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event - NUNCA cachear Firebase o APIs
+// Fetch event - Estrategia optimizada para PWA y API
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
   
-  // Si es Firebase o API, SIEMPRE ir a la red
+  // 1. Si es Firebase, Google Fonts o API, SIEMPRE ir directamente a la red
   if (!shouldCache(url)) {
     event.respondWith(fetch(event.request));
     return;
   }
   
-  // Para otros recursos, intentar cache primero
+  // 2. Para otros recursos, intentar cache primero (Stale-while-revalidate modificado)
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -54,31 +54,40 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         
-        return fetch(event.request).then(
-          (response) => {
-            // No cachear si no es una respuesta válida
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
+        return fetch(event.request).then((fetchResponse) => {
+          // Si la URL es de las que no queremos cachear, devolvemos tal cual
+          if (!shouldCache(url)) {
+            return fetchResponse;
           }
-        ).catch(err => {
+
+          // No cachear si la respuesta no es exitosa (status 200)
+          if (!fetchResponse || fetchResponse.status !== 200) {
+            return fetchResponse;
+          }
+
+          // IMPORTANTE: Solo cachear recursos propios (type: basic)
+          // Esto evita errores de "opaque responses" con fuentes o scripts externos
+          if (fetchResponse.type !== 'basic') {
+            return fetchResponse;
+          }
+          
+          const responseToCache = fetchResponse.clone();
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          
+          return fetchResponse;
+        }).catch(err => {
           console.log('Fetch error:', err);
-          // Si falla, intentar devolver desde cache
+          // Si falla la red (offline), intentar devolver desde cache como último recurso
           return caches.match(event.request);
         });
       })
   );
 });
 
-// Activate event - clean old caches
+// Activate event - Limpieza de versiones antiguas de cache
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
