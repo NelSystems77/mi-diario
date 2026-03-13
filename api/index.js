@@ -283,17 +283,20 @@ app.get('/', (req, res) => {
   });
 });
 
-// Manejo de errores global
+//  Manejo de errores global (opcional pero recomendado)
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Backend API running on http://localhost:${PORT}`);
-  console.log(`📚 Firebase Admin SDK initialized`);
-});
+//  Iniciar servidor SOLO en desarrollo local
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Backend local en http://localhost:${PORT}`);
+    console.log(`📚 Firebase Admin SDK inicializado localmente`);
+  });
+}
 
-// Exportar para Vercel serverless functions
+//  EXPORTACIÓN OBLIGATORIA PARA VERCEL
+// Esto permite que Vercel tome el control de las rutas en la nube
 module.exports = app;
