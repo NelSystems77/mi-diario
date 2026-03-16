@@ -1,6 +1,8 @@
 import { auth } from './firebase';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? '' 
+  : (process.env.REACT_APP_API_URL || 'http://localhost:3001');
 
 // Helper para obtener el token de autenticación
 const getAuthToken = async () => {
