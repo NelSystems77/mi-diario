@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mi-diario-v4';
+const CACHE_NAME = 'mi-diario-v5';
 const urlsToCache = [
   '/',
   '/index.html',
