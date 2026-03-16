@@ -115,5 +115,157 @@
     "createUser": "Create user",
     "deleteUser": "Delete user",
     "expirationDate": "Expiration date"
+  },
+    "therapist": {
+    "title": "Therapist Panel",
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "invitePatient": "Invite Patient",
+    "totalPatients": "Total Patients",
+    "activePatients": "Active Patients",
+    "pendingInvitations": "Pending Invitations",
+    "sessionsThisMonth": "Sessions This Month",
+    "sharedEntries": "Shared Entries",
+    "recentPatients": "Recent Patients",
+    "searchPatient": "Search patient by name or email...",
+    "filterAll": "All",
+    "filterActive": "Active",
+    "filterPending": "Pending",
+    "noPatients": "No patients",
+    "inviteFirst": "Invite your first patient to begin",
+    "viewRecord": "View Record",
+    "back": "Back",
+    "backToPatients": "Back to Patients",
+    "newSession": "New Session",
+    "exportPDF": "Export PDF",
+    
+    "patientRecord": {
+      "title": "Patient Record",
+      "overview": "Overview",
+      "diary": "Diary",
+      "emotions": "Emotions",
+      "selfcare": "Self-care",
+      "notes": "My Notes",
+      "lastSession": "Last Session",
+      "nextSession": "Next Session",
+      "since": "Patient since",
+      "noPermission": "No Permission",
+      "noPermissionText": "The patient has not authorized access to this information",
+      "noData": "No Data",
+      "noDataText": "No information available",
+      "emotionalTrend": "Emotional Trend",
+      "emotionAnalysis": "Emotion Analysis",
+      "frequentEmotions": "Frequent Emotions"
+    },
+
+    "sessionNotes": {
+      "title": "Session Notes",
+      "newNote": "New Session Note",
+      "editNote": "Edit Session Note",
+      "sessionDate": "Session Date",
+      "sessionType": "Session Type",
+      "duration": "Duration (min)",
+      "mainTopics": "Main Topics",
+      "observations": "Session Observations",
+      "interventions": "Interventions Performed",
+      "homework": "Assigned Homework",
+      "nextGoals": "Goals for Next Session",
+      "patientMood": "Patient's Mood",
+      "progressRating": "Progress Rating",
+      "riskAssessment": "Risk Assessment",
+      "save": "Save Note",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "sessionHistory": "Session History",
+      "noSessions": "No sessions recorded",
+      "startFirst": "Start by recording your first session with this patient",
+      
+      "types": {
+        "initial": "Initial",
+        "followup": "Follow-up",
+        "crisis": "Crisis",
+        "discharge": "Discharge"
+      },
+      
+      "risks": {
+        "none": "None",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      
+      "topics": {
+        "anxiety": "Anxiety",
+        "depression": "Depression",
+        "relationships": "Relationships",
+        "work": "Work",
+        "family": "Family",
+        "selfEsteem": "Self-Esteem",
+        "trauma": "Trauma",
+        "stress": "Stress",
+        "sleep": "Sleep",
+        "eating": "Eating",
+        "other": "Other"
+      }
+    },
+
+    "invite": {
+      "title": "Invite New Patient",
+      "subtitle": "Send an email invitation to connect with a patient",
+      "patientEmail": "Patient Email",
+      "emailPlaceholder": "patient@example.com",
+      "message": "Custom Message (Optional)",
+      "messagePlaceholder": "Write a personal message to accompany the invitation...",
+      "send": "Send Invitation",
+      "sending": "Sending...",
+      "success": "Invitation Sent!",
+      "successText": "The patient will receive an email and can accept the invitation from their settings",
+      "pendingInvitations": "Pending Invitations",
+      "noPending": "No pending invitations",
+      
+      "privacy": {
+        "title": "About Privacy",
+        "point1": "The patient decides what information to share with you",
+        "point2": "Can revoke permissions at any time",
+        "point3": "Your session notes are 100% private",
+        "point4": "Invitation expires in 7 days"
+      },
+      
+      "errors": {
+        "invalidEmail": "Please enter a valid email",
+        "selfInvite": "You cannot invite yourself",
+        "alreadyInvited": "A pending invitation already exists for this email",
+        "alreadyPatient": "This patient is already on your list",
+        "sendError": "Error sending invitation. Please try again"
+      }
+    },
+
+    "permissions": {
+      "viewDiary": "View Diary",
+      "viewEmotions": "View Emotions",
+      "viewSelfcare": "View Self-care",
+      "viewImpulses": "View Impulses",
+      "viewDashboard": "View Dashboard",
+      "noPermissions": "No active permissions"
+    },
+
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "inactive": "Inactive",
+      "rejected": "Rejected"
+    }
+  },
+
+  "patient": {
+    "myTherapist": "My Therapist",
+    "therapistInvitations": "Therapist Invitations",
+    "acceptInvitation": "Accept Invitation",
+    "rejectInvitation": "Reject Invitation",
+    "configurePermissions": "Configure Permissions",
+    "revokeAccess": "Revoke Access",
+    "shareWithTherapist": "Share with my therapist",
+    "noTherapist": "You don't have an assigned therapist",
+    "invitationFrom": "Invitation from"
   }
 }
