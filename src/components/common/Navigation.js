@@ -22,7 +22,11 @@ const Navigation = () => {
   const { logout, userRole, userData } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-
+  // log temporal
+  console.log('🔍 NAV - userRole:', userRole);
+  console.log('🔍 NAV - userData:', userData);
+  console.log('🔍 NAV - isTherapist?:', userData?.isTherapist);
+  
   const navItems = [
     { path: '/', icon: Home, label: t('nav.home') },
     { path: '/diary', icon: BookOpen, label: t('nav.diary') },
