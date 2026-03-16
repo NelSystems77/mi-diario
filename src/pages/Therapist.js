@@ -14,7 +14,7 @@ import PatientList from '../components/therapist/PatientList';
 import PatientRecord from '../components/therapist/PatientRecord';
 import InvitePatient from '../components/therapist/InvitePatient';
 import TherapistStats from '../components/therapist/TherapistStats';
-import './Therapist.css';
+//import './Therapist.css';
 
 // Firebase imports
 import { 
