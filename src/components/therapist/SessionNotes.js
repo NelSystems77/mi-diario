@@ -17,7 +17,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../../services/firebase';
-import './SessionNotes.css';
+//import './SessionNotes.css';
 
 const SessionNotes = ({ patientId, notes, onNotesUpdate, isModal, onClose }) => {
   const { currentUser } = useAuth();
