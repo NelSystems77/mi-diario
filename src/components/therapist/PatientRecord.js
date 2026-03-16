@@ -24,7 +24,7 @@ import {
 import { db } from '../../services/firebase';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import './PatientRecord.css';
+//import './PatientRecord.css';
 
 ChartJS.register(...registerables);
 
