@@ -20,6 +20,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userData, setUserData] = useState(null);  // ← AGREGADO
   const [userRole, setUserRole] = useState('user');
   const [loading, setLoading] = useState(true);
 
@@ -29,22 +30,28 @@ export const AuthProvider = ({ children }) => {
       
       if (user) {
         console.log('✅ Usuario autenticado:', user.email);
-        // Fetch user role from Firestore
+        
+        // Fetch user data from Firestore
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserRole(userData.role || 'user');
-            console.log('✅ Documento de usuario encontrado. Rol:', userData.role);
+            const data = userDoc.data();
+            setUserData(data);  // ← AGREGADO
+            setUserRole(data.role || 'user');
+            console.log('✅ Documento de usuario encontrado. Rol:', data.role);
+            console.log('✅ userData completo:', data);  // ← DEBUG
           } else {
             console.warn('⚠️ Documento de usuario NO encontrado en Firestore');
+            setUserData(null);  // ← AGREGADO
             setUserRole('user');
           }
         } catch (error) {
           console.error('❌ Error al obtener documento de usuario:', error);
+          setUserData(null);  // ← AGREGADO
           setUserRole('user');
         }
       } else {
+        setUserData(null);  // ← AGREGADO
         setUserRole('user');
       }
       
@@ -64,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       console.log('✅ Usuario creado en Authentication:', user.uid);
       
       // Paso 2: Crear documento en Firestore
-      const userData = {
+      const newUserData = {
         email: user.email,
         displayName: displayName || '',
         role: email === 'admin@nelsystems.com' ? 'admin' : 'user',
@@ -76,9 +83,9 @@ export const AuthProvider = ({ children }) => {
       };
       
       console.log('🔵 Intentando crear documento en Firestore...');
-      console.log('📄 Datos del usuario:', userData);
+      console.log('📄 Datos del usuario:', newUserData);
       
-      await setDoc(doc(db, 'users', user.uid), userData);
+      await setDoc(doc(db, 'users', user.uid), newUserData);
       console.log('✅ Documento creado exitosamente en Firestore');
       
       return user;
@@ -109,6 +116,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
+    userData,      // ← AGREGADO
     userRole,
     signup,
     login,
