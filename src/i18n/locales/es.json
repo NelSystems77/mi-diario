@@ -115,5 +115,157 @@
     "createUser": "Crear usuario",
     "deleteUser": "Eliminar usuario",
     "expirationDate": "Fecha de expiración"
+  },
+    "therapist": {
+    "title": "Panel del Terapeuta",
+    "dashboard": "Dashboard",
+    "patients": "Pacientes",
+    "invitePatient": "Invitar Paciente",
+    "totalPatients": "Total de Pacientes",
+    "activePatients": "Pacientes Activos",
+    "pendingInvitations": "Invitaciones Pendientes",
+    "sessionsThisMonth": "Sesiones Este Mes",
+    "sharedEntries": "Entradas Compartidas",
+    "recentPatients": "Pacientes Recientes",
+    "searchPatient": "Buscar paciente por nombre o email...",
+    "filterAll": "Todos",
+    "filterActive": "Activos",
+    "filterPending": "Pendientes",
+    "noPatients": "No hay pacientes",
+    "inviteFirst": "Invita a tu primer paciente para comenzar",
+    "viewRecord": "Ver Expediente",
+    "back": "Volver",
+    "backToPatients": "Volver a Pacientes",
+    "newSession": "Nueva Sesión",
+    "exportPDF": "Exportar PDF",
+    
+    "patientRecord": {
+      "title": "Expediente del Paciente",
+      "overview": "Resumen",
+      "diary": "Diario",
+      "emotions": "Emociones",
+      "selfcare": "Autocuidado",
+      "notes": "Mis Notas",
+      "lastSession": "Última Sesión",
+      "nextSession": "Próxima Sesión",
+      "since": "Paciente desde",
+      "noPermission": "Sin Permiso",
+      "noPermissionText": "El paciente no ha autorizado el acceso a esta información",
+      "noData": "Sin Datos",
+      "noDataText": "No hay información disponible",
+      "emotionalTrend": "Tendencia Emocional",
+      "emotionAnalysis": "Análisis de Emociones",
+      "frequentEmotions": "Emociones Frecuentes"
+    },
+
+    "sessionNotes": {
+      "title": "Notas de Sesión",
+      "newNote": "Nueva Nota de Sesión",
+      "editNote": "Editar Nota de Sesión",
+      "sessionDate": "Fecha de la Sesión",
+      "sessionType": "Tipo de Sesión",
+      "duration": "Duración (min)",
+      "mainTopics": "Temas Principales",
+      "observations": "Observaciones de la Sesión",
+      "interventions": "Intervenciones Realizadas",
+      "homework": "Tarea Asignada",
+      "nextGoals": "Objetivos para Próxima Sesión",
+      "patientMood": "Estado de Ánimo del Paciente",
+      "progressRating": "Evaluación de Progreso",
+      "riskAssessment": "Evaluación de Riesgo",
+      "save": "Guardar Nota",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "sessionHistory": "Historial de Sesiones",
+      "noSessions": "Sin sesiones registradas",
+      "startFirst": "Comienza registrando tu primera sesión con este paciente",
+      
+      "types": {
+        "initial": "Inicial",
+        "followup": "Seguimiento",
+        "crisis": "Crisis",
+        "discharge": "Alta"
+      },
+      
+      "risks": {
+        "none": "Ninguno",
+        "low": "Bajo",
+        "medium": "Medio",
+        "high": "Alto"
+      },
+      
+      "topics": {
+        "anxiety": "Ansiedad",
+        "depression": "Depresión",
+        "relationships": "Relaciones",
+        "work": "Trabajo",
+        "family": "Familia",
+        "selfEsteem": "Autoestima",
+        "trauma": "Trauma",
+        "stress": "Estrés",
+        "sleep": "Sueño",
+        "eating": "Alimentación",
+        "other": "Otro"
+      }
+    },
+
+    "invite": {
+      "title": "Invitar Nuevo Paciente",
+      "subtitle": "Envía una invitación por email para conectar con un paciente",
+      "patientEmail": "Email del Paciente",
+      "emailPlaceholder": "paciente@ejemplo.com",
+      "message": "Mensaje Personalizado (Opcional)",
+      "messagePlaceholder": "Escribe un mensaje personal para acompañar la invitación...",
+      "send": "Enviar Invitación",
+      "sending": "Enviando...",
+      "success": "¡Invitación Enviada!",
+      "successText": "El paciente recibirá un email y podrá aceptar la invitación desde su configuración",
+      "pendingInvitations": "Invitaciones Pendientes",
+      "noPending": "No hay invitaciones pendientes",
+      
+      "privacy": {
+        "title": "Sobre la Privacidad",
+        "point1": "El paciente decide qué información compartir contigo",
+        "point2": "Puede revocar permisos en cualquier momento",
+        "point3": "Tus notas de sesión son 100% privadas",
+        "point4": "La invitación expira en 7 días"
+      },
+      
+      "errors": {
+        "invalidEmail": "Por favor ingresa un email válido",
+        "selfInvite": "No puedes invitarte a ti mismo",
+        "alreadyInvited": "Ya existe una invitación pendiente para este email",
+        "alreadyPatient": "Este paciente ya está en tu lista",
+        "sendError": "Error al enviar la invitación. Por favor intenta de nuevo"
+      }
+    },
+
+    "permissions": {
+      "viewDiary": "Ver Diario",
+      "viewEmotions": "Ver Emociones",
+      "viewSelfcare": "Ver Autocuidado",
+      "viewImpulses": "Ver Impulsos",
+      "viewDashboard": "Ver Dashboard",
+      "noPermissions": "Sin permisos activos"
+    },
+
+    "status": {
+      "active": "Activo",
+      "pending": "Pendiente",
+      "inactive": "Inactivo",
+      "rejected": "Rechazado"
+    }
+  },
+
+  "patient": {
+    "myTherapist": "Mi Terapeuta",
+    "therapistInvitations": "Invitaciones de Terapeuta",
+    "acceptInvitation": "Aceptar Invitación",
+    "rejectInvitation": "Rechazar Invitación",
+    "configurePermissions": "Configurar Permisos",
+    "revokeAccess": "Revocar Acceso",
+    "shareWithTherapist": "Compartir con mi terapeuta",
+    "noTherapist": "No tienes un terapeuta asignado",
+    "invitationFrom": "Invitación de"
   }
 }
