@@ -23,11 +23,11 @@ const PatientList = ({ patients, onSelectPatient, loading }) => {
     });
   };
 
-  // Calcular días desde última entrada compartida
-  const daysSinceLastEntry = (patient) => {
-    // TODO: Implementar cuando tengamos timestamp de última entrada
-    return 'N/A';
-  };
+// Calcular días desde última entrada compartida
+// const daysSinceLastEntry = (patient) => {
+//   // TODO: Implementar cuando tengamos timestamp de última entrada
+//   return 'N/A';
+// };
 
   // Icono de estado
   const getStatusIcon = (status) => {
