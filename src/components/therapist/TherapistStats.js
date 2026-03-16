@@ -1,7 +1,7 @@
 import React from 'react';
 import './THERAPIST-COMPONENTS-STYLES.css';
 import { Users, UserCheck, UserPlus, Calendar } from 'lucide-react';
-import './TherapistStats.css';
+//import './TherapistStats.css';
 
 const TherapistStats = ({ stats }) => {
   if (!stats) {
