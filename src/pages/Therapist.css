@@ -1,0 +1,192 @@
+/* Panel del Terapeuta - Estilos principales */
+.therapist-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+}
+
+.therapist-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: white;
+}
+
+.therapist-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.therapist-header p {
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.therapist-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.therapist-tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.therapist-tab {
+  padding: 12px 28px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.therapist-tab:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.therapist-tab.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.therapist-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  min-height: 400px;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loading-message::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Acceso Rápido */
+.quick-access {
+  margin-bottom: 40px;
+}
+
+.quick-access h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #2d3748;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 25px;
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  font-size: 2.5rem;
+  margin: 10px 0;
+  font-weight: 700;
+}
+
+.stat-card p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+/* Pacientes Recientes */
+.recent-patients {
+  margin-top: 30px;
+}
+
+.recent-patients h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #2d3748;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .therapist-container {
+    padding: 15px;
+  }
+  
+  .therapist-header h1 {
+    font-size: 2rem;
+  }
+  
+  .therapist-tabs {
+    flex-direction: column;
+  }
+  
+  .therapist-tab {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
