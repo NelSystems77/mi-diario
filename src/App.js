@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Bible from './pages/Bible';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import Therapist from './pages/Therapist';
 
 // Components
 import Navigation from './components/common/Navigation';
@@ -82,6 +83,13 @@ function AppContent() {
               <Admin />
             </PrivateRoute>
           } />
+            
+           <Route path="/therapist" element={
+            <PrivateRoute>
+              <Therapist />
+            </PrivateRoute>
+          } />
+            
         </Routes>
       </main>
     </div>
