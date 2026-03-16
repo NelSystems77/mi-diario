@@ -23,9 +23,6 @@ const Diary = () => {
 
   const [shareWithTherapist, setShareWithTherapist] = useState(false);
   
-  const [saving, setSaving] = useState(false);
-  const [showEntries, setShowEntries] = useState(false);
-  const [entries, setEntries] = useState([]);
   
   const emotions = [
     'happy', 'sad', 'anxious', 'calm', 'angry',
