@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, addDoc, query, where, orderBy, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { Calendar, Save, Eye } from 'lucide-react';
+import { Calendar, Save, Eye, Share2 } from 'lucide-react';
 import './Diary.css';
 
 const Diary = () => {
@@ -21,6 +21,12 @@ const Diary = () => {
   const [showEntries, setShowEntries] = useState(false);
   const [entries, setEntries] = useState([]);
 
+  const [shareWithTherapist, setShareWithTherapist] = useState(false);
+  
+  const [saving, setSaving] = useState(false);
+  const [showEntries, setShowEntries] = useState(false);
+  const [entries, setEntries] = useState([]);
+  
   const emotions = [
     'happy', 'sad', 'anxious', 'calm', 'angry',
     'grateful', 'hopeful', 'lonely', 'proud', 'frustrated'
@@ -52,7 +58,9 @@ const Diary = () => {
         whatHappened,
         thought,
         kinderView,
-        difficultImpulses
+        difficultImpulses,
+        shareWithTherapist: shareWithTherapist,
+        sharedAt: shareWithTherapist ? new Date().toISOString() : null
       };
 
       await addDoc(collection(db, 'diaryEntries'), entryData);
@@ -71,6 +79,7 @@ const Diary = () => {
       setThought('');
       setKinderView('');
       setDifficultImpulses('');
+      setShareWithTherapist(false);
 
       alert('¡Entrada guardada! +5 puntos');
     } catch (error) {
@@ -209,7 +218,32 @@ const Diary = () => {
               placeholder="Opcional..."
             />
           </div>
-
+                
+          <div className="form-section card share-section">
+            <label className="share-toggle-container">
+              <div className="share-label-group">
+                <Share2 size={20} className={shareWithTherapist ? 'icon-active' : ''} />
+                <div>
+                  <span className="share-title">Compartir con mi terapeuta</span>
+                  <p className="share-description">
+                    {shareWithTherapist 
+                      ? "Visible para tu terapeuta asignado." 
+                      : "Solo tú puedes ver esta entrada."}
+                  </p>
+                </div>
+              </div>
+              <div className="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="share-toggle"
+                  checked={shareWithTherapist}
+                  onChange={(e) => setShareWithTherapist(e.target.checked)}
+                />
+                <label htmlFor="share-toggle" className="slider"></label>
+              </div>
+            </label>
+          </div>
+                    
           <button
             className="btn btn-primary btn-large"
             onClick={handleSave}
