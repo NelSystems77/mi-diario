@@ -115,5 +115,28 @@
     "createUser": "Benutzer erstellen",
     "deleteUser": "Benutzer löschen",
     "expirationDate": "Ablaufdatum"
+  },
+    "therapist": {
+    "title": "Therapeuten-Panel",
+    "dashboard": "Dashboard",
+    "patients": "Patienten",
+    "invitePatient": "Patient Einladen",
+    "totalPatients": "Gesamte Patienten",
+    "activePatients": "Aktive Patienten",
+    "pendingInvitations": "Ausstehende Einladungen",
+    "sessionsThisMonth": "Sitzungen Diesen Monat",
+    "sharedEntries": "Geteilte Einträge",
+    "recentPatients": "Neueste Patienten",
+    "searchPatient": "Patient nach Name oder E-Mail suchen...",
+    "filterAll": "Alle",
+    "filterActive": "Aktiv",
+    "filterPending": "Ausstehend",
+    "noPatients": "Keine Patienten",
+    "inviteFirst": "Laden Sie Ihren ersten Patienten ein",
+    "viewRecord": "Akte Anzeigen",
+    "back": "Zurück",
+    "backToPatients": "Zurück zu Patienten",
+    "newSession": "Neue Sitzung",
+    "exportPDF": "PDF Exportieren"
   }
 }
