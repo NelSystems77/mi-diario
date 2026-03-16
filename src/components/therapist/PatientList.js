@@ -8,7 +8,7 @@ import {
   Clock,
   XCircle
 } from 'lucide-react';
-import './PatientList.css';
+//import './PatientList.css';
 
 const PatientList = ({ patients, onSelectPatient, loading }) => {
   
