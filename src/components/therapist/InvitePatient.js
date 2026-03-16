@@ -11,7 +11,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../../services/firebase';
-import './InvitePatient.css';
+//import './InvitePatient.css';
 
 const InvitePatient = ({ therapistId, onSuccess }) => {
   const { currentUser } = useAuth();
