@@ -10,6 +10,7 @@ import {
   BookMarked, 
   Settings, 
   LogOut,
+  Users,
   Shield,
   Menu,
   X
@@ -18,7 +19,7 @@ import './Navigation.css';
 
 const Navigation = () => {
   const { t } = useTranslation();
-  const { logout, userRole } = useAuth();
+  const { logout, userRole, userData } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,7 +31,15 @@ const Navigation = () => {
     { path: '/bible', icon: BookMarked, label: t('nav.bible') },
     { path: '/settings', icon: Settings, label: t('nav.settings') }
   ];
-
+  
+  if (userRole === 'therapist' || userData?.isTherapist) {
+    navItems.push({ 
+      path: '/therapist', 
+      icon: Users, 
+      label: t('nav.patients') || 'Pacientes', 
+    });
+  }
+  
   if (userRole === 'admin') {
     navItems.push({ path: '/admin', icon: Shield, label: t('nav.admin') });
   }
