@@ -21,8 +21,7 @@ import {
   collection, 
   query, 
   where, 
-  getDocs, 
-  orderBy,
+  getDocs,
   doc,
   getDoc 
 } from 'firebase/firestore';
@@ -32,19 +31,15 @@ const Therapist = () => {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
   
-  // Estados principales
-  const [activeView, setActiveView] = useState('dashboard'); // 'dashboard' | 'patients' | 'patient-record' | 'invite'
+  const [activeView, setActiveView] = useState('dashboard');
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('active'); // 'all' | 'active' | 'pending'
-  
-  // Verificar si el usuario es terapeuta
+  const [filterStatus, setFilterStatus] = useState('active');
   const [isTherapist, setIsTherapist] = useState(false);
 
-  // Verificar rol de terapeuta
   useEffect(() => {
     const checkTherapistRole = async () => {
       if (!currentUser) return;
@@ -53,7 +48,7 @@ const Therapist = () => {
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setIsTherapist(userData.isTherapist === true);
+          setIsTherapist(userData.isTherapist === true || userData.role === 'therapist');
         }
       } catch (error) {
         console.error('Error verificando rol de terapeuta:', error);
@@ -63,35 +58,30 @@ const Therapist = () => {
     checkTherapistRole();
   }, [currentUser]);
 
-  // Cargar pacientes del terapeuta
   useEffect(() => {
     if (!currentUser || !isTherapist) return;
 
     const loadPatients = async () => {
       try {
         setLoading(true);
+        console.log('🔍 Cargando pacientes para therapistId:', currentUser.uid);
         
-        // Obtener relaciones terapeuta-paciente
         const relationshipsRef = collection(db, 'therapist-patient-relationships');
         const q = query(
           relationshipsRef,
-          where('therapistId', '==', currentUser.uid),
-          orderBy('acceptedAt', 'desc')
+          where('therapistId', '==', currentUser.uid)
         );
         
         const snapshot = await getDocs(q);
+        console.log('📋 Relaciones encontradas:', snapshot.size);
+        
         const patientsList = [];
         
         for (const docSnap of snapshot.docs) {
           const relationship = { id: docSnap.id, ...docSnap.data() };
+          console.log('👤 Procesando paciente:', relationship.patientName);
           
-          // Obtener datos adicionales del paciente
-          const patientDoc = await getDoc(doc(db, 'users', relationship.patientId));
-          
-          if (patientDoc.exists()) {
-            const patientData = patientDoc.data();
-            
-            // Contar entradas compartidas
+          try {
             const entriesRef = collection(db, 'diaryEntries');
             const entriesQuery = query(
               entriesRef,
@@ -103,20 +93,32 @@ const Therapist = () => {
             patientsList.push({
               ...relationship,
               patientData: {
-                name: patientData.name || 'Sin nombre',
-                email: patientData.email,
-                createdAt: patientData.createdAt
+                name: relationship.patientName || 'Sin nombre',
+                email: relationship.patientEmail,
+                createdAt: relationship.createdAt
               },
               sharedEntriesCount: entriesSnapshot.size
+            });
+          } catch (error) {
+            console.error('Error cargando datos del paciente:', error);
+            patientsList.push({
+              ...relationship,
+              patientData: {
+                name: relationship.patientName || 'Sin nombre',
+                email: relationship.patientEmail,
+                createdAt: relationship.createdAt
+              },
+              sharedEntriesCount: 0
             });
           }
         }
         
+        console.log('✅ Pacientes cargados:', patientsList.length);
         setPatients(patientsList);
         calculateStats(patientsList);
         setLoading(false);
       } catch (error) {
-        console.error('Error cargando pacientes:', error);
+        console.error('❌ Error cargando pacientes:', error);
         setLoading(false);
       }
     };
@@ -124,23 +126,18 @@ const Therapist = () => {
     loadPatients();
   }, [currentUser, isTherapist]);
 
-  // Calcular estadísticas
   const calculateStats = (patientsList) => {
     const active = patientsList.filter(p => p.status === 'active').length;
     const pending = patientsList.filter(p => p.status === 'pending').length;
-    
-    // Contar sesiones este mes (esto requeriría consultar therapistNotes)
-    // Por ahora, estimación simple
     
     setStats({
       totalPatients: patientsList.length,
       activePatients: active,
       pendingInvitations: pending,
-      sessionsThisMonth: 0 // TODO: calcular desde therapistNotes
+      sessionsThisMonth: 0
     });
   };
 
-  // Filtrar pacientes
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = 
       patient.patientData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,22 +149,19 @@ const Therapist = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Abrir expediente de paciente
   const openPatientRecord = (patient) => {
     setSelectedPatient(patient);
     setActiveView('patient-record');
   };
 
-  // Volver a la lista
   const backToList = () => {
     setSelectedPatient(null);
     setActiveView('patients');
   };
 
-  // Renderizado condicional según acceso
   if (!currentUser) {
     return (
-      <div className="therapist-page">
+      <div className="therapist-container">
         <div className="access-denied">
           <h2>Acceso Denegado</h2>
           <p>Debes iniciar sesión para acceder al panel de terapeuta.</p>
@@ -178,7 +172,7 @@ const Therapist = () => {
 
   if (!isTherapist) {
     return (
-      <div className="therapist-page">
+      <div className="therapist-container">
         <div className="access-denied">
           <h2>Acceso Restringido</h2>
           <p>Solo terapeutas verificados pueden acceder a esta sección.</p>
@@ -190,36 +184,31 @@ const Therapist = () => {
     );
   }
 
-  // Renderizado principal
   return (
-    <div className="therapist-page">
-      {/* Header */}
-      <div className="page-header">
-        <div className="header-content">
-          <h1>{t('therapist.title') || 'Panel del Terapeuta'}</h1>
-          <p className="subtitle">Gestión de pacientes y expedientes</p>
-        </div>
-        <Users size={32} className="page-icon" />
+    <div className="therapist-container">
+      <div className="therapist-header">
+        <Users size={80} className="therapist-icon" />
+        <h1>{t('therapist.title') || 'Panel del Terapeuta'}</h1>
+        <p>Gestión de pacientes y expedientes</p>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="therapist-nav">
+      <div className="therapist-tabs">
         <button
-          className={`nav-tab ${activeView === 'dashboard' ? 'active' : ''}`}
+          className={`therapist-tab ${activeView === 'dashboard' ? 'active' : ''}`}
           onClick={() => setActiveView('dashboard')}
         >
           <TrendingUp size={18} />
           Dashboard
         </button>
         <button
-          className={`nav-tab ${activeView === 'patients' ? 'active' : ''}`}
+          className={`therapist-tab ${activeView === 'patients' ? 'active' : ''}`}
           onClick={() => setActiveView('patients')}
         >
           <Users size={18} />
           Pacientes ({stats?.activePatients || 0})
         </button>
         <button
-          className={`nav-tab ${activeView === 'invite' ? 'active' : ''}`}
+          className={`therapist-tab ${activeView === 'invite' ? 'active' : ''}`}
           onClick={() => setActiveView('invite')}
         >
           <UserPlus size={18} />
@@ -227,83 +216,80 @@ const Therapist = () => {
         </button>
       </div>
 
-      {/* Content Area */}
       <div className="therapist-content">
-        {/* VISTA: Dashboard */}
         {activeView === 'dashboard' && (
           <div className="dashboard-view">
-            <TherapistStats stats={stats} />
-            
-            <div className="quick-access">
-              <h3>Acceso Rápido</h3>
-              <div className="quick-access-grid">
-                <div className="quick-card" onClick={() => setActiveView('patients')}>
-                  <Users size={24} />
-                  <div className="quick-info">
-                    <span className="quick-number">{stats?.activePatients || 0}</span>
-                    <span className="quick-label">Pacientes Activos</span>
-                  </div>
-                </div>
+            {loading ? (
+              <div className="loading-message">Cargando estadísticas...</div>
+            ) : (
+              <>
+                <TherapistStats stats={stats} />
                 
-                <div className="quick-card" onClick={() => setActiveView('invite')}>
-                  <UserPlus size={24} />
-                  <div className="quick-info">
-                    <span className="quick-number">{stats?.pendingInvitations || 0}</span>
-                    <span className="quick-label">Invitaciones Pendientes</span>
+                <div className="quick-access">
+                  <h2>Acceso Rápido</h2>
+                  <div className="quick-access-grid">
+                    <div className="quick-access-item" onClick={() => setActiveView('patients')}>
+                      <Users size={24} />
+                      <span className="quick-access-count">{stats?.activePatients || 0}</span>
+                      <span>Pacientes Activos</span>
+                    </div>
+                    
+                    <div className="quick-access-item" onClick={() => setActiveView('invite')}>
+                      <UserPlus size={24} />
+                      <span className="quick-access-count">{stats?.pendingInvitations || 0}</span>
+                      <span>Invitaciones Pendientes</span>
+                    </div>
+                    
+                    <div className="quick-access-item">
+                      <Calendar size={24} />
+                      <span className="quick-access-count">{stats?.sessionsThisMonth || 0}</span>
+                      <span>Sesiones Este Mes</span>
+                    </div>
+                    
+                    <div className="quick-access-item">
+                      <FileText size={24} />
+                      <span className="quick-access-count">
+                        {patients.reduce((sum, p) => sum + (p.sharedEntriesCount || 0), 0)}
+                      </span>
+                      <span>Entradas Compartidas</span>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="quick-card">
-                  <Calendar size={24} />
-                  <div className="quick-info">
-                    <span className="quick-number">{stats?.sessionsThisMonth || 0}</span>
-                    <span className="quick-label">Sesiones Este Mes</span>
-                  </div>
-                </div>
-                
-                <div className="quick-card">
-                  <FileText size={24} />
-                  <div className="quick-info">
-                    <span className="quick-number">
-                      {patients.reduce((sum, p) => sum + (p.sharedEntriesCount || 0), 0)}
-                    </span>
-                    <span className="quick-label">Entradas Compartidas</span>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Pacientes Recientes */}
-            <div className="recent-patients card">
-              <h3>Pacientes Recientes</h3>
-              {patients.slice(0, 5).map(patient => (
-                <div 
-                  key={patient.id} 
-                  className="patient-preview"
-                  onClick={() => openPatientRecord(patient)}
-                >
-                  <div className="patient-avatar">
-                    {patient.patientData.name.charAt(0).toUpperCase()}
+                {patients.length > 0 && (
+                  <div className="recent-patients">
+                    <h2>Pacientes Recientes</h2>
+                    <div className="patients-preview-list">
+                      {patients.slice(0, 5).map(patient => (
+                        <div 
+                          key={patient.id} 
+                          className="patient-preview"
+                          onClick={() => openPatientRecord(patient)}
+                        >
+                          <div className="patient-avatar">
+                            {patient.patientData.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="patient-info">
+                            <span className="patient-name">{patient.patientData.name}</span>
+                            <span className="patient-email">{patient.patientData.email}</span>
+                          </div>
+                          <div className="patient-status">
+                            <span className={`status-badge ${patient.status}`}>
+                              {patient.status === 'active' ? 'Activo' : 'Pendiente'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="patient-info">
-                    <span className="patient-name">{patient.patientData.name}</span>
-                    <span className="patient-email">{patient.patientData.email}</span>
-                  </div>
-                  <div className="patient-status">
-                    <span className={`status-badge ${patient.status}`}>
-                      {patient.status === 'active' ? 'Activo' : 'Pendiente'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                )}
+              </>
+            )}
           </div>
         )}
 
-        {/* VISTA: Lista de Pacientes */}
         {activeView === 'patients' && (
           <div className="patients-view">
-            {/* Barra de búsqueda y filtros */}
             <div className="patients-controls card">
               <div className="search-bar">
                 <Search size={18} />
@@ -339,7 +325,6 @@ const Therapist = () => {
               </div>
             </div>
 
-            {/* Lista de Pacientes */}
             <PatientList 
               patients={filteredPatients}
               onSelectPatient={openPatientRecord}
@@ -348,7 +333,6 @@ const Therapist = () => {
           </div>
         )}
 
-        {/* VISTA: Expediente del Paciente */}
         {activeView === 'patient-record' && selectedPatient && (
           <PatientRecord 
             patient={selectedPatient}
@@ -356,11 +340,14 @@ const Therapist = () => {
           />
         )}
 
-        {/* VISTA: Invitar Paciente */}
         {activeView === 'invite' && (
           <InvitePatient 
             therapistId={currentUser.uid}
-            onSuccess={() => setActiveView('patients')}
+            onSuccess={() => {
+              setActiveView('patients');
+              // Recargar pacientes después de invitar
+              window.location.reload();
+            }}
           />
         )}
       </div>
