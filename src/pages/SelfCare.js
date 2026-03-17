@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { Check, Award } from 'lucide-react';
+import { Check, Award, BookMarked } from 'lucide-react';
 import './SelfCare.css';
 
 const SelfCare = () => {
@@ -13,24 +13,63 @@ const SelfCare = () => {
   const [checklist, setChecklist] = useState({});
   const [todayPoints, setTodayPoints] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [lastResetDate, setLastResetDate] = useState('');
   
+  // Lista completa de tareas (NUEVA TAREA AGREGADA)
   const selfCareItems = [
-    { id: 'makeBed', points: 5 },
-    { id: 'shower', points: 5 },
-    { id: 'brushTeeth', points: 5 },
-    { id: 'eatWell', points: 5 },
-    { id: 'sleepEnough', points: 5 },
-    { id: 'goOutside', points: 5 },
-    { id: 'talkToSomeone', points: 5 },
-    { id: 'listenMusic', points: 5 },
-    { id: 'writeDiary', points: 5 }
+    { id: 'makeBed', points: 5, icon: '🛏️' },
+    { id: 'shower', points: 5, icon: '🚿' },
+    { id: 'brushTeeth', points: 5, icon: '🦷' },
+    { id: 'eatWell', points: 5, icon: '🥗' },
+    { id: 'sleepEnough', points: 5, icon: '😴' },
+    { id: 'goOutside', points: 5, icon: '🌳' },
+    { id: 'talkToSomeone', points: 5, icon: '💬' },
+    { id: 'listenMusic', points: 5, icon: '🎵' },
+    { id: 'writeDiary', points: 5, icon: '📔' },
+    { id: 'bibleReading', points: 5, icon: '📖' } // NUEVA TAREA
   ];
 
   useEffect(() => {
+    checkAndResetDaily();
     fetchTodayChecklist();
     fetchUserPoints();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // NUEVA FUNCIÓN: Verificar si es un nuevo día y resetear
+  const checkAndResetDaily = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const userMetaRef = doc(db, 'selfcare-meta', currentUser.uid);
+      const metaDoc = await getDoc(userMetaRef);
+      
+      if (metaDoc.exists()) {
+        const lastReset = metaDoc.data().lastResetDate;
+        
+        // Si es un nuevo día, resetear
+        if (lastReset !== today) {
+          await setDoc(userMetaRef, {
+            lastResetDate: today
+          });
+          setLastResetDate(today);
+          
+          // Limpiar checklist del día anterior
+          setChecklist({});
+          setTodayPoints(0);
+        } else {
+          setLastResetDate(lastReset);
+        }
+      } else {
+        // Primera vez, crear documento meta
+        await setDoc(userMetaRef, {
+          lastResetDate: today
+        });
+        setLastResetDate(today);
+      }
+    } catch (error) {
+      console.error('Error en reset diario:', error);
+    }
+  };
 
   const fetchTodayChecklist = async () => {
     try {
@@ -113,7 +152,10 @@ const SelfCare = () => {
     }
   };
 
-  const completedCount = Object.values(checklist).filter(Boolean).length;
+  // FILTRAR: Mostrar solo tareas pendientes (no completadas)
+  const pendingItems = selfCareItems.filter(item => !checklist[item.id]);
+  const completedItems = selfCareItems.filter(item => checklist[item.id]);
+  const completedCount = completedItems.length;
 
   return (
     <div className="selfcare-page">
@@ -141,22 +183,47 @@ const SelfCare = () => {
         </div>
       </div>
 
+      {/* Tareas Completadas (Resumen) */}
+      {completedItems.length > 0 && (
+        <div className="completed-section card fade-in">
+          <h3>✅ Completado hoy ({completedItems.length})</h3>
+          <div className="completed-tags">
+            {completedItems.map(item => (
+              <span key={item.id} className="completed-tag">
+                {item.icon} {t(`selfcare.${item.id}`)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tareas Pendientes */}
       <div className="checklist-grid">
-        {selfCareItems.map(item => (
-          <button
-            key={item.id}
-            className={`checklist-item card ${checklist[item.id] ? 'checked' : ''}`}
-            onClick={() => toggleItem(item.id, item.points)}
-          >
-            <div className="check-circle">
-              {checklist[item.id] && <Check size={24} strokeWidth={3} />}
-            </div>
-            <div className="item-content">
-              <span className="item-label">{t(`selfcare.${item.id}`)}</span>
-              <span className="item-points">+{item.points} pts</span>
-            </div>
-          </button>
-        ))}
+        {pendingItems.length > 0 ? (
+          pendingItems.map(item => (
+            <button
+              key={item.id}
+              className="checklist-item card"
+              onClick={() => toggleItem(item.id, item.points)}
+            >
+              <div className="check-circle">
+                <Check size={24} strokeWidth={3} style={{ opacity: 0.3 }} />
+              </div>
+              <div className="item-content">
+                <span className="item-icon">{item.icon}</span>
+                <span className="item-label">{t(`selfcare.${item.id}`)}</span>
+                <span className="item-points">+{item.points} pts</span>
+              </div>
+            </button>
+          ))
+        ) : (
+          <div className="all-done card">
+            <div className="all-done-icon">🎉</div>
+            <h3>¡Felicitaciones!</h3>
+            <p>Has completado todas las tareas de autocuidado por hoy</p>
+            <p className="reset-note">Las tareas se renovarán mañana</p>
+          </div>
+        )}
       </div>
 
       <div className="total-points card">
