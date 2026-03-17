@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { 
   Globe, 
@@ -12,9 +12,9 @@ import {
   Mic, 
   Volume2,
   Contrast,
-  UserCheck, // NUEVO
-  X,         // NUEVO
-  Check      // NUEVO
+  UserCheck,
+  X,
+  Check
 } from 'lucide-react';
 import './Settings.css';
 
@@ -23,21 +23,31 @@ const Settings = () => {
   const { theme, setTheme, textSize, setTextSize } = useTheme();
   const { currentUser } = useAuth();
   
-  // Estados existentes
   const [quotePreference, setQuotePreference] = useState('motivational');
   const [isListening, setIsListening] = useState(false);
-
-  // NUEVO: Estados del Terapeuta
   const [therapistRelationship, setTherapistRelationship] = useState(null);
   const [invitations, setInvitations] = useState([]);
+  const [userData, setUserData] = useState(null);
 
-  // NUEVO: Efecto para cargar datos del terapeuta
   useEffect(() => {
+    loadUserData();
     loadTherapistData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
-  // NUEVO: Función para cargar la relación e invitaciones
+  const loadUserData = async () => {
+    if (!currentUser) return;
+    try {
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      const userDocSnap = await getDocs(query(collection(db, 'users'), where('__name__', '==', currentUser.uid)));
+      if (!userDocSnap.empty) {
+        setUserData(userDocSnap.docs[0].data());
+      }
+    } catch (error) {
+      console.error('Error cargando datos del usuario:', error);
+    }
+  };
+
   const loadTherapistData = async () => {
     if (!currentUser) return;
 
@@ -59,7 +69,7 @@ const Settings = () => {
       const invitationsRef = collection(db, 'therapistInvitations');
       const invQuery = query(
         invitationsRef,
-        where('patientEmail', '==', currentUser.email), // Asume que currentUser tiene email
+        where('patientEmail', '==', currentUser.email),
         where('status', '==', 'pending')
       );
       const invSnapshot = await getDocs(invQuery);
@@ -70,7 +80,6 @@ const Settings = () => {
     }
   };
 
-  // NUEVO: Función para alternar permisos
   const togglePermission = async (permission) => {
     if (!therapistRelationship) return;
 
@@ -93,7 +102,65 @@ const Settings = () => {
     }
   };
 
-  // Arrays de configuración existentes
+  // NUEVA FUNCIÓN: Aceptar invitación
+  const handleAcceptInvitation = async (invitation) => {
+    try {
+      // Crear relación terapeuta-paciente
+      const relationshipData = {
+        therapistId: invitation.therapistId,
+        therapistName: invitation.therapistName,
+        therapistEmail: invitation.therapistEmail,
+        patientId: currentUser.uid,
+        patientEmail: currentUser.email,
+        patientName: userData?.displayName || currentUser.email,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        permissions: {
+          viewDiary: true,
+          viewEmotions: true,
+          viewSelfcare: true,
+          viewDashboard: true
+        }
+      };
+
+      await setDoc(doc(db, 'therapist-patient-relationships', `${invitation.therapistId}_${currentUser.uid}`), relationshipData);
+
+      // Actualizar invitación a aceptada
+      await updateDoc(doc(db, 'therapistInvitations', invitation.id), {
+        status: 'accepted',
+        acceptedAt: new Date().toISOString()
+      });
+
+      // Recargar datos
+      loadTherapistData();
+
+      alert('¡Invitación aceptada! Tu terapeuta ahora puede acompañar tu proceso.');
+    } catch (error) {
+      console.error('Error aceptando invitación:', error);
+      alert('Error al aceptar la invitación. Inténtalo de nuevo.');
+    }
+  };
+
+  // NUEVA FUNCIÓN: Rechazar invitación
+  const handleRejectInvitation = async (invitation) => {
+    if (!window.confirm('¿Estás seguro de rechazar esta invitación?')) {
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, 'therapistInvitations', invitation.id), {
+        status: 'rejected',
+        rejectedAt: new Date().toISOString()
+      });
+
+      // Recargar invitaciones
+      loadTherapistData();
+    } catch (error) {
+      console.error('Error rechazando invitación:', error);
+      alert('Error al rechazar la invitación. Inténtalo de nuevo.');
+    }
+  };
+
   const languages = [
     { code: 'es', name: 'Español', flag: '🇪🇸' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -113,7 +180,6 @@ const Settings = () => {
     { value: 'xl', label: 'Extra Grande' }
   ];
 
-  // Funciones existentes
   const changeLanguage = async (lng) => {
     i18n.changeLanguage(lng);
     localStorage.setItem('language', lng);
@@ -176,7 +242,7 @@ const Settings = () => {
       <h1>{t('settings.title')}</h1>
 
       <div className="settings-container">
-        {/* Settings de Lenguaje */}
+        {/* Lenguaje */}
         <div className="settings-section card">
           <div className="section-header">
             <Globe size={24} />
@@ -196,7 +262,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Settings de Tema */}
+        {/* Tema */}
         <div className="settings-section card">
           <div className="section-header">
             <Moon size={24} />
@@ -216,7 +282,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Settings de Tamaño de Texto */}
+        {/* Tamaño de Texto */}
         <div className="settings-section card">
           <div className="section-header">
             <Type size={24} />
@@ -235,7 +301,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Settings de Accesibilidad */}
+        {/* Accesibilidad */}
         <div className="settings-section card">
           <div className="section-header">
             <Mic size={24} />
@@ -273,7 +339,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Settings de Frase Diaria */}
+        {/* Frase Diaria */}
         <div className="settings-section card">
           <div className="section-header">
             <h3>{t('settings.dailyQuote')}</h3>
@@ -294,7 +360,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* --- NUEVA SECCIÓN: MI TERAPEUTA --- */}
+        {/* MI TERAPEUTA */}
         <div className="settings-section card">
           <div className="section-header">
             <UserCheck size={24} />
@@ -358,25 +424,37 @@ const Settings = () => {
           ) : (
             <div className="no-therapist">
               <p>No tienes un terapeuta asignado</p>
+              {invitations.length > 0 && (
+                <p className="hint-text">Tienes {invitations.length} invitación{invitations.length > 1 ? 'es' : ''} pendiente{invitations.length > 1 ? 's' : ''} abajo ⬇️</p>
+              )}
             </div>
           )}
 
           {/* Invitaciones Pendientes */}
           {invitations.length > 0 && (
             <div className="pending-invitations">
-              <h5>Invitaciones Pendientes</h5>
+              <h5>Invitaciones Pendientes ({invitations.length})</h5>
               {invitations.map(invitation => (
                 <div key={invitation.id} className="invitation-card">
                   <div className="invitation-info">
                     <strong>{invitation.therapistName}</strong>
-                    <p>{invitation.message}</p>
+                    <p className="invitation-email">{invitation.therapistEmail}</p>
+                    {invitation.message && (
+                      <p className="invitation-message">"{invitation.message}"</p>
+                    )}
                   </div>
                   <div className="invitation-actions">
-                    <button className="btn btn-primary btn-accept">
+                    <button 
+                      className="btn btn-primary btn-accept"
+                      onClick={() => handleAcceptInvitation(invitation)}
+                    >
                       <Check size={16} />
                       Aceptar
                     </button>
-                    <button className="btn btn-secondary btn-reject">
+                    <button 
+                      className="btn btn-secondary btn-reject"
+                      onClick={() => handleRejectInvitation(invitation)}
+                    >
                       <X size={16} />
                       Rechazar
                     </button>
@@ -386,7 +464,6 @@ const Settings = () => {
             </div>
           )}
         </div>
-        {/* --- FIN SECCIÓN MI TERAPEUTA --- */}
 
       </div>
     </div>
