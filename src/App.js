@@ -84,7 +84,7 @@ function AppContent() {
             </PrivateRoute>
           } />
             
-           <Route path="/therapist" element={
+          <Route path="/therapist" element={
             <PrivateRoute>
               <Therapist />
             </PrivateRoute>
