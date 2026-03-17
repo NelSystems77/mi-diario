@@ -24,12 +24,11 @@ import {
 import { db } from '../../services/firebase';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-//import './PatientRecord.css';
 
 ChartJS.register(...registerables);
 
 const PatientRecord = ({ patient, onBack }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'diary' | 'emotions' | 'selfcare' | 'notes'
+  const [activeTab, setActiveTab] = useState('overview');
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [emotionData, setEmotionData] = useState(null);
   const [selfcareData, setSelfcareData] = useState([]);
@@ -42,11 +41,12 @@ const PatientRecord = ({ patient, onBack }) => {
     const loadPatientData = async () => {
       if (!patient?.patientId) return;
       
-      try {
-        setLoading(true);
+      setLoading(true);
 
-        // 1. Cargar entradas del diario (solo las compartidas)
-        if (patient.permissions?.viewDiary) {
+      // 1. Cargar entradas del diario
+      if (patient.permissions?.viewDiary) {
+        try {
+          console.log('📖 Intentando cargar diario para patientId:', patient.patientId);
           const diaryRef = collection(db, 'diaryEntries');
           const diaryQuery = query(
             diaryRef,
@@ -55,21 +55,30 @@ const PatientRecord = ({ patient, onBack }) => {
             orderBy('date', 'desc'),
             limit(30)
           );
+          console.log('📖 Ejecutando query de diario...');
           const diarySnapshot = await getDocs(diaryQuery);
+          console.log('✅ Diario cargado:', diarySnapshot.size, 'entradas');
+          
           const entries = diarySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
           }));
           setDiaryEntries(entries);
 
-          // Procesar datos emocionales para gráfica
+          // Procesar datos emocionales
           if (patient.permissions?.viewEmotions) {
             processEmotionData(entries);
           }
+        } catch (error) {
+          console.error('❌ ERROR CARGANDO DIARIO:', error.code, '-', error.message);
+          setDiaryEntries([]);
         }
+      }
 
-        // 2. Cargar datos de autocuidado
-        if (patient.permissions?.viewSelfcare) {
+      // 2. Cargar datos de autocuidado
+      if (patient.permissions?.viewSelfcare) {
+        try {
+          console.log('💪 Intentando cargar selfcare para patientId:', patient.patientId);
           const selfcareRef = collection(db, 'selfcare');
           const selfcareQuery = query(
             selfcareRef,
@@ -77,33 +86,46 @@ const PatientRecord = ({ patient, onBack }) => {
             orderBy('date', 'desc'),
             limit(30)
           );
+          console.log('💪 Ejecutando query de selfcare...');
           const selfcareSnapshot = await getDocs(selfcareQuery);
+          console.log('✅ Selfcare cargado:', selfcareSnapshot.size, 'documentos');
+          
           const selfcareItems = selfcareSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
           }));
           setSelfcareData(selfcareItems);
+        } catch (error) {
+          console.error('❌ ERROR CARGANDO SELFCARE:', error.code, '-', error.message);
+          setSelfcareData([]);
         }
+      }
 
-        // 3. Cargar notas del terapeuta
+      // 3. Cargar notas del terapeuta
+      try {
+        console.log('📝 Intentando cargar notas del terapeuta para patientId:', patient.patientId);
         const notesRef = collection(db, 'therapistNotes');
         const notesQuery = query(
           notesRef,
           where('patientId', '==', patient.patientId),
           orderBy('sessionDate', 'desc')
         );
+        console.log('📝 Ejecutando query de notas...');
         const notesSnapshot = await getDocs(notesQuery);
+        console.log('✅ Notas cargadas:', notesSnapshot.size, 'notas');
+        
         const notes = notesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setTherapistNotes(notes);
-
-        setLoading(false);
       } catch (error) {
-        console.error('Error cargando datos del paciente:', error);
-        setLoading(false);
+        console.error('❌ ERROR CARGANDO NOTAS:', error.code, '-', error.message);
+        setTherapistNotes([]);
       }
+
+      setLoading(false);
+      console.log('✅ Carga de datos del paciente completada');
     };
 
     loadPatientData();
@@ -122,7 +144,6 @@ const PatientRecord = ({ patient, onBack }) => {
         {
           label: 'Estado Emocional',
           data: last30Days.map(entry => {
-            // Convertir semáforo a número: verde=3, amarillo=2, rojo=1
             const moodMap = { 'green': 3, 'yellow': 2, 'red': 1 };
             return moodMap[entry.mood] || 0;
           }),
@@ -143,7 +164,6 @@ const PatientRecord = ({ patient, onBack }) => {
     setEmotionData(chartData);
   };
 
-  // Formatear fecha
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -154,7 +174,6 @@ const PatientRecord = ({ patient, onBack }) => {
     });
   };
 
-  // Formatear hora
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -164,9 +183,7 @@ const PatientRecord = ({ patient, onBack }) => {
     });
   };
 
-  // Exportar expediente a PDF
   const exportToPDF = () => {
-    // TODO: Implementar exportación con jsPDF
     alert('Exportación a PDF en desarrollo');
   };
 
@@ -181,7 +198,6 @@ const PatientRecord = ({ patient, onBack }) => {
 
   return (
     <div className="patient-record">
-      {/* Header del Expediente */}
       <div className="record-header card">
         <button className="back-button" onClick={onBack}>
           <ArrowLeft size={20} />
@@ -196,7 +212,7 @@ const PatientRecord = ({ patient, onBack }) => {
             <h2>{patient.patientData.name}</h2>
             <p className="patient-email">{patient.patientData.email}</p>
             <div className="patient-meta">
-              <span>Paciente desde {formatDate(patient.acceptedAt)}</span>
+              <span>Paciente desde {formatDate(patient.createdAt)}</span>
               <span className={`status-badge-large ${patient.status}`}>
                 {patient.status === 'active' ? 'Activo' : 'Pendiente'}
               </span>
@@ -218,7 +234,6 @@ const PatientRecord = ({ patient, onBack }) => {
         </div>
       </div>
 
-      {/* Tabs de Navegación */}
       <div className="record-tabs">
         <button
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
@@ -260,12 +275,9 @@ const PatientRecord = ({ patient, onBack }) => {
         </button>
       </div>
 
-      {/* Contenido de los Tabs */}
       <div className="record-content">
-        {/* TAB: Resumen */}
         {activeTab === 'overview' && (
           <div className="overview-tab">
-            {/* Stats Cards */}
             <div className="stats-grid">
               <div className="stat-card card">
                 <FileText size={24} className="stat-icon" />
@@ -302,7 +314,6 @@ const PatientRecord = ({ patient, onBack }) => {
               </div>
             </div>
 
-            {/* Gráfica de Emociones */}
             {emotionData && patient.permissions?.viewEmotions && (
               <div className="emotions-chart card">
                 <h3>Tendencia Emocional (Últimos 30 días)</h3>
@@ -332,7 +343,6 @@ const PatientRecord = ({ patient, onBack }) => {
               </div>
             )}
 
-            {/* Últimas Entradas */}
             {patient.permissions?.viewDiary && diaryEntries.length > 0 && (
               <div className="recent-entries card">
                 <h3>Últimas Entradas del Diario</h3>
@@ -355,7 +365,6 @@ const PatientRecord = ({ patient, onBack }) => {
               </div>
             )}
 
-            {/* Notas de la Última Sesión */}
             {therapistNotes.length > 0 && (
               <div className="last-session card">
                 <h3>Última Sesión</h3>
@@ -381,7 +390,6 @@ const PatientRecord = ({ patient, onBack }) => {
           </div>
         )}
 
-        {/* TAB: Diario */}
         {activeTab === 'diary' && (
           <div className="diary-tab">
             {!patient.permissions?.viewDiary ? (
@@ -456,7 +464,6 @@ const PatientRecord = ({ patient, onBack }) => {
           </div>
         )}
 
-        {/* TAB: Emociones */}
         {activeTab === 'emotions' && (
           <div className="emotions-tab">
             {!patient.permissions?.viewEmotions ? (
@@ -489,7 +496,6 @@ const PatientRecord = ({ patient, onBack }) => {
                   </div>
                 </div>
 
-                {/* Análisis de Emociones */}
                 <div className="emotion-analysis card">
                   <h3>Análisis de Emociones Frecuentes</h3>
                   {(() => {
@@ -531,7 +537,6 @@ const PatientRecord = ({ patient, onBack }) => {
           </div>
         )}
 
-        {/* TAB: Autocuidado */}
         {activeTab === 'selfcare' && (
           <div className="selfcare-tab">
             {!patient.permissions?.viewSelfcare ? (
@@ -548,7 +553,6 @@ const PatientRecord = ({ patient, onBack }) => {
               </div>
             ) : (
               <div className="selfcare-content">
-                {/* TODO: Implementar visualización de autocuidado */}
                 <div className="card">
                   <h3>Progreso de Autocuidado</h3>
                   <p>Visualización de hábitos saludables en desarrollo...</p>
@@ -558,7 +562,6 @@ const PatientRecord = ({ patient, onBack }) => {
           </div>
         )}
 
-        {/* TAB: Notas del Terapeuta */}
         {activeTab === 'notes' && (
           <SessionNotes
             patientId={patient.patientId}
@@ -568,7 +571,6 @@ const PatientRecord = ({ patient, onBack }) => {
         )}
       </div>
 
-      {/* Modal: Nueva Sesión */}
       {showNewSessionModal && (
         <SessionNotes
           patientId={patient.patientId}
