@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, collection, query, where, getDocs, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { Sparkles, BookOpen, Heart, TrendingUp, UserCheck, X } from 'lucide-react';
 import RoleBasedRedirect from '../components/common/RoleBasedRedirect';
@@ -49,6 +49,7 @@ const Home = () => {
 
   useEffect(() => {
     loadInvitations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   useEffect(() => {
@@ -85,7 +86,6 @@ const Home = () => {
 
   const handleAcceptInvitation = async (invitation) => {
     try {
-      // Crear relación terapeuta-paciente
       const relationshipData = {
         therapistId: invitation.therapistId,
         therapistName: invitation.therapistName,
@@ -105,33 +105,17 @@ const Home = () => {
 
       await setDoc(doc(db, 'therapist-patient-relationships', `${invitation.therapistId}_${currentUser.uid}`), relationshipData);
 
-      // Actualizar invitación a aceptada
       await updateDoc(doc(db, 'therapistInvitations', invitation.id), {
         status: 'accepted',
         acceptedAt: new Date().toISOString()
       });
 
-      // Recargar invitaciones
       loadInvitations();
 
       alert('¡Invitación aceptada! Tu terapeuta ahora puede acompañar tu proceso.');
     } catch (error) {
       console.error('Error aceptando invitación:', error);
       alert('Error al aceptar la invitación. Inténtalo de nuevo.');
-    }
-  };
-
-  const handleRejectInvitation = async (invitation) => {
-    try {
-      await updateDoc(doc(db, 'therapistInvitations', invitation.id), {
-        status: 'rejected',
-        rejectedAt: new Date().toISOString()
-      });
-
-      loadInvitations();
-    } catch (error) {
-      console.error('Error rechazando invitación:', error);
-      alert('Error al rechazar la invitación. Inténtalo de nuevo.');
     }
   };
 
@@ -153,7 +137,6 @@ const Home = () => {
           <p className="tagline">{t('app.tagline')}</p>
         </div>
 
-        {/* Banner de Invitaciones */}
         {showInvitationBanner && invitations.length > 0 && (
           <div className="invitation-banner card scale-in">
             <div className="banner-header">
