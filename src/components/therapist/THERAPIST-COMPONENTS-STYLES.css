@@ -1,6 +1,7 @@
 /* ============================================
    MI DIARIO - THERAPIST COMPONENTS STYLES
    Coherente con el gradiente morado #667eea → #764ba2
+   Con soporte completo para modo oscuro
    ============================================ */
 
 :root {
@@ -257,6 +258,7 @@
 .stat-label {
   font-size: 0.9rem;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* Gráfica de Emociones */
@@ -268,6 +270,7 @@
   margin: 0 0 25px 0;
   color: var(--text-primary);
   font-size: 1.4rem;
+  font-weight: 700;
 }
 
 .chart-container {
@@ -280,6 +283,7 @@
 .recent-entries h3 {
   margin: 0 0 20px 0;
   color: var(--text-primary);
+  font-weight: 700;
 }
 
 .entry-preview {
@@ -329,17 +333,24 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
+  font-weight: 400;
 }
 
 /* Última Sesión */
 .last-session h3 {
   margin: 0 0 20px 0;
   color: var(--text-primary);
+  font-weight: 700;
 }
 
 .session-summary {
   color: var(--text-secondary);
   line-height: 1.8;
+}
+
+.session-summary strong {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .session-meta {
@@ -368,6 +379,7 @@
   margin: 0 0 30px 0;
   color: var(--text-primary);
   font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .chart-container-large {
@@ -388,6 +400,7 @@
   margin: 0 0 25px 0;
   color: var(--text-primary);
   font-size: 1.4rem;
+  font-weight: 700;
 }
 
 .emotions-frequency {
@@ -512,6 +525,7 @@
   color: var(--text-primary);
   display: block;
   margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .emotions-tags {
@@ -544,11 +558,13 @@
   display: block;
   margin-bottom: 8px;
   font-size: 1rem;
+  font-weight: 600;
 }
 
 .content-section p {
   color: var(--text-secondary);
   margin: 0;
+  font-weight: 400;
 }
 
 .content-section.highlight {
@@ -563,6 +579,47 @@
   padding: 16px;
   border-radius: 12px;
   border-left: 4px solid var(--warning);
+}
+
+.content-section.sensitive strong {
+  color: #856404;
+}
+
+.content-section.sensitive p {
+  color: #856404;
+}
+
+/* ============================================
+   TAB: AUTOCUIDADO (SELFCARE)
+   ============================================ */
+
+.selfcare-tab {
+  min-height: 400px;
+}
+
+.selfcare-content {
+  min-height: 400px;
+}
+
+.selfcare-content .card {
+  padding: 60px 40px;
+  text-align: center;
+  background: var(--bg-card);
+}
+
+.selfcare-content .card h3 {
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.selfcare-content .card p {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  margin: 0;
+  line-height: 1.8;
+  font-weight: 400;
 }
 
 /* ============================================
@@ -587,12 +644,14 @@
   color: var(--text-primary);
   margin: 0 0 10px 0;
   font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .no-permission p,
 .no-data p {
   margin: 0;
   font-size: 1rem;
+  font-weight: 400;
 }
 
 /* ============================================
@@ -617,6 +676,167 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #f8f9fa;
+    --text-secondary: #b2bec3;
+    --text-light: #636e72;
+    --bg-light: #2d3436;
+    --bg-card: #34495e;
+    --border-color: #4a5568;
+  }
+
+  body {
+    background: #1a1a1a;
+  }
+
+  .patient-record {
+    background: #1a1a1a;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+  }
+
+  .record-header {
+    background: var(--bg-card);
+  }
+
+  .back-button {
+    background: var(--bg-light);
+    color: var(--text-primary);
+  }
+
+  .back-button:hover {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: var(--bg-light);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:hover {
+    background: #4a5568;
+  }
+
+  .record-tabs .tab {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .record-tabs .tab:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+  }
+
+  .stat-icon {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  }
+
+  .emotions-chart,
+  .emotions-chart-large,
+  .emotion-analysis,
+  .recent-entries,
+  .last-session,
+  .diary-entry-full,
+  .selfcare-content .card {
+    background: var(--bg-card);
+  }
+
+  .chart-container,
+  .chart-container-large {
+    background: #2d3436;
+  }
+
+  .entry-preview {
+    border-bottom-color: var(--border-color);
+  }
+
+  .emotion-tag,
+  .bar-container {
+    background: var(--bg-light);
+    color: var(--text-primary);
+  }
+
+  .content-section.highlight {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border-left-color: var(--primary-color);
+  }
+
+  .content-section.sensitive {
+    background: rgba(253, 203, 110, 0.15);
+    border-left-color: var(--warning);
+  }
+
+  .content-section.sensitive strong,
+  .content-section.sensitive p {
+    color: #fdcb6e;
+  }
+
+  .no-permission svg,
+  .no-data svg {
+    color: #636e72;
+  }
+
+  .mood-badge.green {
+    background: rgba(0, 184, 148, 0.2);
+    color: #00b894;
+  }
+
+  .mood-badge.yellow {
+    background: rgba(253, 203, 110, 0.2);
+    color: #fdcb6e;
+  }
+
+  .mood-badge.red {
+    background: rgba(214, 48, 49, 0.2);
+    color: #ff7675;
+  }
+
+  .mood-badge-large.green {
+    background: rgba(0, 184, 148, 0.2);
+    color: #00b894;
+  }
+
+  .mood-badge-large.yellow {
+    background: rgba(253, 203, 110, 0.2);
+    color: #fdcb6e;
+  }
+
+  .mood-badge-large.red {
+    background: rgba(214, 48, 49, 0.2);
+    color: #ff7675;
+  }
+
+  .status-badge-large.active {
+    background: rgba(0, 184, 148, 0.2);
+    color: #00b894;
+  }
+
+  .status-badge-large.pending {
+    background: rgba(253, 203, 110, 0.2);
+    color: #fdcb6e;
+  }
+
+  .intensity-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    color: #a29bfe;
+  }
 }
 
 /* ============================================
@@ -723,6 +943,18 @@
     font-size: 0.85rem;
     padding: 6px 12px;
   }
+
+  .selfcare-content .card {
+    padding: 40px 20px;
+  }
+
+  .selfcare-content .card h3 {
+    font-size: 1.4rem;
+  }
+
+  .selfcare-content .card p {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -748,5 +980,13 @@
 
   .emotion-bar {
     grid-template-columns: 80px 1fr 30px;
+  }
+
+  .selfcare-content .card h3 {
+    font-size: 1.2rem;
+  }
+
+  .selfcare-content .card p {
+    font-size: 0.95rem;
   }
 }
