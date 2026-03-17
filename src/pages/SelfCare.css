@@ -165,4 +165,115 @@
   .checklist-grid {
     grid-template-columns: 1fr;
   }
+/* Sección de Tareas Completadas */
+.completed-section {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  border: 2px solid #28a745;
+}
+
+.completed-section h3 {
+  margin: 0 0 15px 0;
+  color: #155724;
+  font-size: 1.2rem;
+}
+
+.completed-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.completed-tag {
+  background: white;
+  color: #155724;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Estado: Todas las tareas completadas */
+.all-done {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border-radius: 20px;
+  grid-column: 1 / -1;
+}
+
+.all-done-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.all-done h3 {
+  color: #2d3436;
+  font-size: 1.8rem;
+  margin: 10px 0;
+}
+
+.all-done p {
+  color: #636e72;
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+
+.reset-note {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Mejora visual del ícono en item-content */
+.item-icon {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.item-label {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .completed-tags {
+    gap: 8px;
+  }
+
+  .completed-tag {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+  }
+
+  .all-done {
+    padding: 40px 15px;
+  }
+
+  .all-done-icon {
+    font-size: 3rem;
+  }
+
+  .all-done h3 {
+    font-size: 1.4rem;
+  }
 }
