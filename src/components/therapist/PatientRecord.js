@@ -185,7 +185,6 @@ const PatientRecord = ({ patient, onBack }) => {
 
 const exportToPDF = async () => {
   try {
-    // Importar jsPDF dinámicamente
     const { jsPDF } = await import('jspdf');
     
     const doc = new jsPDF();
@@ -193,7 +192,6 @@ const exportToPDF = async () => {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = 20;
     
-    // Función para verificar si necesita nueva página
     const checkNewPage = (requiredSpace = 20) => {
       if (yPosition + requiredSpace > pageHeight - 20) {
         doc.addPage();
@@ -203,11 +201,10 @@ const exportToPDF = async () => {
       return false;
     };
     
-    // Header con gradiente (simulado con rectángulos)
+    // Header con gradiente
     doc.setFillColor(102, 126, 234);
     doc.rect(0, 0, pageWidth, 40, 'F');
     
-    // Título principal
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont(undefined, 'bold');
@@ -237,7 +234,6 @@ const exportToPDF = async () => {
     doc.text(`Fecha de ingreso: ${formatDate(patient.createdAt)}`, 20, yPosition);
     yPosition += 15;
     
-    // Línea separadora
     doc.setDrawColor(225, 232, 237);
     doc.line(20, yPosition, pageWidth - 20, yPosition);
     yPosition += 15;
@@ -252,7 +248,6 @@ const exportToPDF = async () => {
     doc.setFontSize(11);
     doc.setFont(undefined, 'normal');
     
-    // Grid de estadísticas
     const stats = [
       { label: 'Entradas compartidas', value: diaryEntries.length },
       { label: 'Sesiones registradas', value: therapistNotes.length },
@@ -276,48 +271,126 @@ const exportToPDF = async () => {
       doc.text('Entradas del Diario', 20, yPosition);
       yPosition += 10;
       
-      diaryEntries.slice(0, 10).forEach((entry, index) => {
-        checkNewPage(40);
+      // Filtrar entradas con contenido real
+      const validEntries = diaryEntries.filter(entry => 
+        entry.whatHappened || entry.thought || entry.kinderView || entry.difficultImpulses
+      );
+      
+      validEntries.slice(0, 10).forEach((entry, index) => {
+        checkNewPage(50);
         
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text(`${formatDate(entry.date)}`, 20, yPosition);
         
-        // Mood badge
-        const moodText = entry.mood === 'green' ? 'Bien' : entry.mood === 'yellow' ? 'Regular' : 'Mal';
+        // Estado emocional (trafficLight en vez de mood)
+        const moodMap = {
+          'green': 'Bien',
+          'yellow': 'Regular',
+          'red': 'Mal'
+        };
+        const moodText = moodMap[entry.trafficLight] || 'Sin especificar';
+        
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
-        doc.text(`Estado: ${moodText}`, 120, yPosition);
+        doc.text(`Estado: ${moodText}`, 100, yPosition);
+        doc.text(`Intensidad: ${entry.intensity || 0}/10`, 150, yPosition);
         yPosition += 7;
         
-        // Reflexión (limitada a 3 líneas)
-        if (entry.reflection) {
-          doc.setFontSize(10);
-          const splitText = doc.splitTextToSize(entry.reflection, pageWidth - 50);
-          const maxLines = 3;
-          const textToShow = splitText.slice(0, maxLines);
-          
-          textToShow.forEach(line => {
-            checkNewPage();
-            doc.text(line, 25, yPosition);
-            yPosition += 5;
-          });
-          
-          if (splitText.length > maxLines) {
-            doc.setFont(undefined, 'italic');
-            doc.text('[Texto truncado...]', 25, yPosition);
-            yPosition += 5;
-            doc.setFont(undefined, 'normal');
-          }
+        // Emociones
+        if (entry.emotions && entry.emotions.length > 0) {
+          doc.setFont(undefined, 'italic');
+          const emotionsText = entry.emotions.join(', ');
+          doc.text(`Emociones: ${emotionsText}`, 25, yPosition);
+          yPosition += 6;
+          doc.setFont(undefined, 'normal');
         }
         
-        yPosition += 10;
+        // Qué pasó
+        if (entry.whatHappened) {
+          doc.setFont(undefined, 'bold');
+          doc.text('Qué pasó:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitText = doc.splitTextToSize(entry.whatHappened, pageWidth - 55);
+          splitText.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+        
+        // Pensamiento
+        if (entry.thought) {
+          doc.setFont(undefined, 'bold');
+          doc.text('Pensamiento:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitText = doc.splitTextToSize(entry.thought, pageWidth - 55);
+          splitText.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+        
+        // Vista más amable
+        if (entry.kinderView) {
+          doc.setFont(undefined, 'bold');
+          doc.text('Vista más amable:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitText = doc.splitTextToSize(entry.kinderView, pageWidth - 55);
+          splitText.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+        
+        // Impulsos difíciles (solo si el terapeuta tiene permiso)
+        if (entry.difficultImpulses && patient.permissions?.viewImpulses) {
+          doc.setFont(undefined, 'bold');
+          doc.setTextColor(133, 100, 4); // Amarillo oscuro
+          doc.text('⚠ Impulsos difíciles:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitText = doc.splitTextToSize(entry.difficultImpulses, pageWidth - 55);
+          splitText.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+          doc.setTextColor(45, 52, 54); // Volver a color normal
+          yPosition += 3;
+        }
+        
+        yPosition += 8;
+        
+        // Línea separadora entre entradas
+        if (index < validEntries.length - 1) {
+          doc.setDrawColor(225, 232, 237);
+          doc.line(25, yPosition, pageWidth - 25, yPosition);
+          yPosition += 10;
+        }
       });
       
-      if (diaryEntries.length > 10) {
+      if (validEntries.length > 10) {
         doc.setFontSize(10);
         doc.setFont(undefined, 'italic');
-        doc.text(`... y ${diaryEntries.length - 10} entradas más`, 20, yPosition);
+        doc.text(`... y ${validEntries.length - 10} entradas más`, 20, yPosition);
+        yPosition += 10;
+      } else if (validEntries.length === 0) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'italic');
+        doc.text('No hay entradas con contenido para mostrar', 20, yPosition);
         yPosition += 10;
       }
       
@@ -345,7 +418,6 @@ const exportToPDF = async () => {
         doc.text(formatDate(note.sessionDate), 120, yPosition);
         yPosition += 7;
         
-        // Observaciones
         if (note.observations) {
           doc.setFontSize(10);
           doc.setFont(undefined, 'bold');
@@ -355,6 +427,21 @@ const exportToPDF = async () => {
           doc.setFont(undefined, 'normal');
           const splitObs = doc.splitTextToSize(note.observations, pageWidth - 55);
           splitObs.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+        }
+        
+        if (note.homework) {
+          yPosition += 3;
+          doc.setFont(undefined, 'bold');
+          doc.text('Tarea asignada:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitHW = doc.splitTextToSize(note.homework, pageWidth - 55);
+          splitHW.forEach(line => {
             checkNewPage();
             doc.text(line, 30, yPosition);
             yPosition += 5;
@@ -392,7 +479,6 @@ const exportToPDF = async () => {
       );
     }
     
-    // Guardar PDF
     const fileName = `Expediente_${patient.patientData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     
