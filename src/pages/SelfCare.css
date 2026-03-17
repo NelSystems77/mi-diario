@@ -165,6 +165,7 @@
   .checklist-grid {
     grid-template-columns: 1fr;
   }
+}
 /* Sección de Tareas Completadas */
 .completed-section {
   background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
