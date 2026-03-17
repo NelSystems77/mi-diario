@@ -183,9 +183,226 @@ const PatientRecord = ({ patient, onBack }) => {
     });
   };
 
-  const exportToPDF = () => {
-    alert('Exportación a PDF en desarrollo');
-  };
+const exportToPDF = async () => {
+  try {
+    // Importar jsPDF dinámicamente
+    const { jsPDF } = await import('jspdf');
+    
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPosition = 20;
+    
+    // Función para verificar si necesita nueva página
+    const checkNewPage = (requiredSpace = 20) => {
+      if (yPosition + requiredSpace > pageHeight - 20) {
+        doc.addPage();
+        yPosition = 20;
+        return true;
+      }
+      return false;
+    };
+    
+    // Header con gradiente (simulado con rectángulos)
+    doc.setFillColor(102, 126, 234);
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    // Título principal
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text('Mi Diario', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'normal');
+    doc.text('Expediente del Paciente', pageWidth / 2, 28, { align: 'center' });
+    
+    yPosition = 50;
+    
+    // Información del Paciente
+    doc.setTextColor(45, 52, 54);
+    doc.setFontSize(18);
+    doc.setFont(undefined, 'bold');
+    doc.text('Información del Paciente', 20, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Nombre: ${patient.patientData.name}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Email: ${patient.patientData.email}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Estado: ${patient.status === 'active' ? 'Activo' : 'Pendiente'}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Fecha de ingreso: ${formatDate(patient.createdAt)}`, 20, yPosition);
+    yPosition += 15;
+    
+    // Línea separadora
+    doc.setDrawColor(225, 232, 237);
+    doc.line(20, yPosition, pageWidth - 20, yPosition);
+    yPosition += 15;
+    
+    // Estadísticas
+    checkNewPage(60);
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Resumen Estadístico', 20, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    
+    // Grid de estadísticas
+    const stats = [
+      { label: 'Entradas compartidas', value: diaryEntries.length },
+      { label: 'Sesiones registradas', value: therapistNotes.length },
+      { label: 'Días de autocuidado', value: selfcareData.length }
+    ];
+    
+    stats.forEach(stat => {
+      doc.text(`${stat.label}: ${stat.value}`, 20, yPosition);
+      yPosition += 7;
+    });
+    
+    yPosition += 10;
+    doc.line(20, yPosition, pageWidth - 20, yPosition);
+    yPosition += 15;
+    
+    // Entradas del Diario
+    if (patient.permissions?.viewDiary && diaryEntries.length > 0) {
+      checkNewPage(60);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('Entradas del Diario', 20, yPosition);
+      yPosition += 10;
+      
+      diaryEntries.slice(0, 10).forEach((entry, index) => {
+        checkNewPage(40);
+        
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${formatDate(entry.date)}`, 20, yPosition);
+        
+        // Mood badge
+        const moodText = entry.mood === 'green' ? 'Bien' : entry.mood === 'yellow' ? 'Regular' : 'Mal';
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Estado: ${moodText}`, 120, yPosition);
+        yPosition += 7;
+        
+        // Reflexión (limitada a 3 líneas)
+        if (entry.reflection) {
+          doc.setFontSize(10);
+          const splitText = doc.splitTextToSize(entry.reflection, pageWidth - 50);
+          const maxLines = 3;
+          const textToShow = splitText.slice(0, maxLines);
+          
+          textToShow.forEach(line => {
+            checkNewPage();
+            doc.text(line, 25, yPosition);
+            yPosition += 5;
+          });
+          
+          if (splitText.length > maxLines) {
+            doc.setFont(undefined, 'italic');
+            doc.text('[Texto truncado...]', 25, yPosition);
+            yPosition += 5;
+            doc.setFont(undefined, 'normal');
+          }
+        }
+        
+        yPosition += 10;
+      });
+      
+      if (diaryEntries.length > 10) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'italic');
+        doc.text(`... y ${diaryEntries.length - 10} entradas más`, 20, yPosition);
+        yPosition += 10;
+      }
+      
+      yPosition += 5;
+      doc.line(20, yPosition, pageWidth - 20, yPosition);
+      yPosition += 15;
+    }
+    
+    // Notas del Terapeuta
+    if (therapistNotes.length > 0) {
+      checkNewPage(60);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('Notas del Terapeuta', 20, yPosition);
+      yPosition += 10;
+      
+      therapistNotes.slice(0, 5).forEach((note, index) => {
+        checkNewPage(50);
+        
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Sesión #${note.sessionNumber || index + 1}`, 20, yPosition);
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(formatDate(note.sessionDate), 120, yPosition);
+        yPosition += 7;
+        
+        // Observaciones
+        if (note.observations) {
+          doc.setFontSize(10);
+          doc.setFont(undefined, 'bold');
+          doc.text('Observaciones:', 25, yPosition);
+          yPosition += 5;
+          
+          doc.setFont(undefined, 'normal');
+          const splitObs = doc.splitTextToSize(note.observations, pageWidth - 55);
+          splitObs.forEach(line => {
+            checkNewPage();
+            doc.text(line, 30, yPosition);
+            yPosition += 5;
+          });
+        }
+        
+        yPosition += 10;
+      });
+      
+      if (therapistNotes.length > 5) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'italic');
+        doc.text(`... y ${therapistNotes.length - 5} sesiones más`, 20, yPosition);
+        yPosition += 10;
+      }
+    }
+    
+    // Footer en todas las páginas
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Generado el ${new Date().toLocaleDateString('es-ES')} | Página ${i} de ${totalPages}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+      doc.text(
+        'Mi Diario - Expediente Confidencial',
+        pageWidth / 2,
+        pageHeight - 5,
+        { align: 'center' }
+      );
+    }
+    
+    // Guardar PDF
+    const fileName = `Expediente_${patient.patientData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+    
+    alert('✅ PDF generado exitosamente');
+    
+  } catch (error) {
+    console.error('Error generando PDF:', error);
+    alert('❌ Error al generar el PDF. Inténtalo de nuevo.');
+  }
+};
 
   if (loading) {
     return (
