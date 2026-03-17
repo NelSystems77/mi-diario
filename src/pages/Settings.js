@@ -38,7 +38,6 @@ const Settings = () => {
   const loadUserData = async () => {
     if (!currentUser) return;
     try {
-      const userDocRef = doc(db, 'users', currentUser.uid);
       const userDocSnap = await getDocs(query(collection(db, 'users'), where('__name__', '==', currentUser.uid)));
       if (!userDocSnap.empty) {
         setUserData(userDocSnap.docs[0].data());
@@ -52,7 +51,6 @@ const Settings = () => {
     if (!currentUser) return;
 
     try {
-      // Cargar relación activa con terapeuta
       const relationshipsRef = collection(db, 'therapist-patient-relationships');
       const q = query(
         relationshipsRef,
@@ -65,7 +63,6 @@ const Settings = () => {
         setTherapistRelationship({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() });
       }
 
-      // Cargar invitaciones pendientes
       const invitationsRef = collection(db, 'therapistInvitations');
       const invQuery = query(
         invitationsRef,
@@ -102,10 +99,8 @@ const Settings = () => {
     }
   };
 
-  // NUEVA FUNCIÓN: Aceptar invitación
   const handleAcceptInvitation = async (invitation) => {
     try {
-      // Crear relación terapeuta-paciente
       const relationshipData = {
         therapistId: invitation.therapistId,
         therapistName: invitation.therapistName,
@@ -125,13 +120,11 @@ const Settings = () => {
 
       await setDoc(doc(db, 'therapist-patient-relationships', `${invitation.therapistId}_${currentUser.uid}`), relationshipData);
 
-      // Actualizar invitación a aceptada
       await updateDoc(doc(db, 'therapistInvitations', invitation.id), {
         status: 'accepted',
         acceptedAt: new Date().toISOString()
       });
 
-      // Recargar datos
       loadTherapistData();
 
       alert('¡Invitación aceptada! Tu terapeuta ahora puede acompañar tu proceso.');
@@ -141,7 +134,6 @@ const Settings = () => {
     }
   };
 
-  // NUEVA FUNCIÓN: Rechazar invitación
   const handleRejectInvitation = async (invitation) => {
     if (!window.confirm('¿Estás seguro de rechazar esta invitación?')) {
       return;
@@ -153,7 +145,6 @@ const Settings = () => {
         rejectedAt: new Date().toISOString()
       });
 
-      // Recargar invitaciones
       loadTherapistData();
     } catch (error) {
       console.error('Error rechazando invitación:', error);
@@ -242,7 +233,6 @@ const Settings = () => {
       <h1>{t('settings.title')}</h1>
 
       <div className="settings-container">
-        {/* Lenguaje */}
         <div className="settings-section card">
           <div className="section-header">
             <Globe size={24} />
@@ -262,7 +252,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Tema */}
         <div className="settings-section card">
           <div className="section-header">
             <Moon size={24} />
@@ -282,7 +271,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Tamaño de Texto */}
         <div className="settings-section card">
           <div className="section-header">
             <Type size={24} />
@@ -301,7 +289,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Accesibilidad */}
         <div className="settings-section card">
           <div className="section-header">
             <Mic size={24} />
@@ -339,7 +326,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Frase Diaria */}
         <div className="settings-section card">
           <div className="section-header">
             <h3>{t('settings.dailyQuote')}</h3>
@@ -360,7 +346,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* MI TERAPEUTA */}
         <div className="settings-section card">
           <div className="section-header">
             <UserCheck size={24} />
@@ -430,7 +415,6 @@ const Settings = () => {
             </div>
           )}
 
-          {/* Invitaciones Pendientes */}
           {invitations.length > 0 && (
             <div className="pending-invitations">
               <h5>Invitaciones Pendientes ({invitations.length})</h5>
