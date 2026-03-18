@@ -8,26 +8,19 @@ import {
   Clock,
   XCircle
 } from 'lucide-react';
-//import './PatientList.css';
 
 const PatientList = ({ patients, onSelectPatient, loading }) => {
   
-  // Formatear fecha
+  // Formatear fecha (MEJORADO)
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString('es-ES', {
       day: '2-digit',
-      month: 'short',
+      month: 'long',
       year: 'numeric'
     });
   };
-
-// Calcular días desde última entrada compartida
-// const daysSinceLastEntry = (patient) => {
-//   // TODO: Implementar cuando tengamos timestamp de última entrada
-//   return 'N/A';
-// };
 
   // Icono de estado
   const getStatusIcon = (status) => {
@@ -143,12 +136,18 @@ const PatientList = ({ patients, onSelectPatient, loading }) => {
               </div>
             </div>
 
-            {/* Footer del Card */}
+            {/* Footer del Card - MEJORADO */}
             <div className="patient-card-footer">
               <span className="relation-date">
-                Desde {formatDate(patient.acceptedAt || patient.invitedAt)}
+                Desde {formatDate(patient.acceptedAt || patient.invitedAt || patient.createdAt)}
               </span>
-              <button className="view-record-btn">
+              <button 
+                className="view-record-btn"
+                onClick={(e) => {
+                  e.stopPropagation(); // Evitar doble click
+                  onSelectPatient(patient);
+                }}
+              >
                 Ver Expediente →
               </button>
             </div>
