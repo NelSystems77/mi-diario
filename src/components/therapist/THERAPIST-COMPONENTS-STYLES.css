@@ -1,25 +1,346 @@
 /* ============================================
    MI DIARIO - THERAPIST COMPONENTS STYLES
-   Coherente con el gradiente morado #667eea → #764ba2
-   Con soporte completo para modo oscuro
+   Coherencia total en modo claro y oscuro
    ============================================ */
 
 :root {
+  /* Colores principales */
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --primary-color: #667eea;
   --primary-dark: #764ba2;
+  
+  /* Textos modo claro */
   --text-primary: #2d3436;
   --text-secondary: #636e72;
   --text-light: #b2bec3;
-  --bg-light: #f8f9fa;
+  
+  /* Fondos modo claro */
+  --bg-page: #f8f9fa;
   --bg-card: #ffffff;
+  --bg-light: #f1f3f5;
+  --bg-hover: #e9ecef;
+  
+  /* Bordes y sombras */
   --border-color: #e1e8ed;
-  --success: #00b894;
-  --warning: #fdcb6e;
-  --danger: #d63031;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  
+  /* Estados */
+  --success: #00b894;
+  --success-bg: #d4edda;
+  --warning: #fdcb6e;
+  --warning-bg: #fff3cd;
+  --danger: #d63031;
+  --danger-bg: #f8d7da;
+  
+  /* Gráficas */
+  --chart-bg: #f8f9fa;
+  --chart-text: #2d3436;
+  --chart-grid: rgba(45, 52, 54, 0.1);
+}
+
+/* ============================================
+   MODO OSCURO - Variables Coherentes
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Textos modo oscuro */
+    --text-primary: #f8f9fa;
+    --text-secondary: #b2bec3;
+    --text-light: #8395a7;
+    
+    /* Fondos modo oscuro */
+    --bg-page: #1a1a1a;
+    --bg-card: #2d3436;
+    --bg-light: #34495e;
+    --bg-hover: #485460;
+    
+    /* Bordes modo oscuro */
+    --border-color: #4a5568;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    
+    /* Estados modo oscuro */
+    --success-bg: rgba(0, 184, 148, 0.2);
+    --warning-bg: rgba(253, 203, 110, 0.2);
+    --danger-bg: rgba(214, 48, 49, 0.2);
+    
+    /* Gráficas modo oscuro */
+    --chart-bg: #34495e;
+    --chart-text: #f8f9fa;
+    --chart-grid: rgba(248, 249, 250, 0.1);
+  }
+}
+
+/* ============================================
+   PATIENT LIST - LISTA DE PACIENTES
+   ============================================ */
+
+.patient-list {
+  padding: 20px;
+}
+
+.list-header {
+  margin-bottom: 25px;
+}
+
+.list-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.patients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.patient-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.patient-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+/* Header del Card */
+.patient-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.patient-avatar-large {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.patient-main-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.patient-main-info h4 {
+  margin: 0 0 5px 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-email-small {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.status-icon.active {
+  color: var(--success);
+}
+
+.status-icon.pending {
+  color: var(--warning);
+}
+
+.status-icon.inactive {
+  color: var(--danger);
+}
+
+.status-text.active {
+  color: var(--success);
+}
+
+.status-text.pending {
+  color: var(--warning);
+}
+
+.status-text.inactive {
+  color: var(--danger);
+}
+
+/* Stats */
+.patient-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+  background: var(--bg-light);
+  border-radius: 12px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.stat-item svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Permisos */
+.patient-permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.permissions-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.permissions-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.permission-tag {
+  background: var(--bg-light);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.permission-tag.no-permissions {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+/* Footer */
+.patient-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.relation-date {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.view-record-btn {
+  padding: 10px 20px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.view-record-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Estados de carga y vacío */
+.patient-list-loading,
+.patient-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.patient-list-empty {
+  background: var(--bg-card);
+  border-radius: 16px;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.patient-list-empty h3 {
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+}
+
+.patient-list-empty p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 1rem;
 }
 
 /* ============================================
@@ -39,6 +360,7 @@
   border-radius: 20px;
   box-shadow: var(--shadow-md);
   margin-bottom: 30px;
+  border: 1px solid var(--border-color);
 }
 
 .back-button {
@@ -66,6 +388,7 @@
   display: flex;
   align-items: center;
   gap: 25px;
+  flex-wrap: wrap;
 }
 
 .patient-avatar-xl {
@@ -84,12 +407,14 @@
 
 .patient-details {
   flex: 1;
+  min-width: 250px;
 }
 
 .patient-details h2 {
   margin: 0 0 8px 0;
   color: var(--text-primary);
   font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .patient-email {
@@ -104,6 +429,7 @@
   align-items: center;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  flex-wrap: wrap;
 }
 
 .status-badge-large {
@@ -114,18 +440,19 @@
 }
 
 .status-badge-large.active {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success-bg);
+  color: var(--success);
 }
 
 .status-badge-large.pending {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .header-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn-primary,
@@ -157,7 +484,7 @@
 }
 
 .btn-secondary:hover {
-  background: #e1e8ed;
+  background: var(--bg-hover);
 }
 
 /* Tabs de Navegación */
@@ -167,6 +494,21 @@
   margin-bottom: 30px;
   overflow-x: auto;
   padding-bottom: 5px;
+  scroll-behavior: smooth;
+}
+
+.record-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.record-tabs::-webkit-scrollbar-track {
+  background: var(--bg-light);
+  border-radius: 3px;
+}
+
+.record-tabs::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
 }
 
 .record-tabs .tab {
@@ -182,11 +524,13 @@
   gap: 8px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .record-tabs .tab:hover:not(:disabled) {
   border-color: var(--primary-color);
   color: var(--primary-color);
+  background: var(--bg-hover);
 }
 
 .record-tabs .tab.active {
@@ -207,6 +551,7 @@
 
 .card {
   background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 25px;
   box-shadow: var(--shadow-sm);
@@ -229,13 +574,15 @@
   align-items: center;
   gap: 20px;
   padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .stat-icon {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
   color: var(--primary-color);
   display: flex;
   align-items: center;
@@ -262,11 +609,15 @@
 }
 
 /* Gráfica de Emociones */
-.emotions-chart {
+.emotions-chart,
+.emotions-chart-large {
   padding: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
-.emotions-chart h3 {
+.emotions-chart h3,
+.emotions-chart-large h3 {
   margin: 0 0 25px 0;
   color: var(--text-primary);
   font-size: 1.4rem;
@@ -277,10 +628,23 @@
   position: relative;
   height: 350px;
   width: 100%;
+  background: var(--chart-bg);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.chart-container-large {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  background: var(--chart-bg);
+  padding: 20px;
+  border-radius: 12px;
 }
 
 /* Últimas Entradas */
-.recent-entries h3 {
+.recent-entries h3,
+.last-session h3 {
   margin: 0 0 20px 0;
   color: var(--text-primary);
   font-weight: 700;
@@ -300,6 +664,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .entry-date {
@@ -315,18 +681,18 @@
 }
 
 .mood-badge.green {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success-bg);
+  color: var(--success);
 }
 
 .mood-badge.yellow {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .mood-badge.red {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .entry-text {
@@ -336,13 +702,7 @@
   font-weight: 400;
 }
 
-/* Última Sesión */
-.last-session h3 {
-  margin: 0 0 20px 0;
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
+/* Sesión */
 .session-summary {
   color: var(--text-secondary);
   line-height: 1.8;
@@ -370,30 +730,10 @@
   min-height: 500px;
 }
 
-.emotions-chart-large {
-  padding: 30px;
-  margin-bottom: 30px;
-}
-
-.emotions-chart-large h3 {
-  margin: 0 0 30px 0;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.chart-container-large {
-  position: relative;
-  height: 400px;
-  width: 100%;
-  background: var(--bg-light);
-  padding: 20px;
-  border-radius: 12px;
-}
-
-/* Análisis de Emociones */
 .emotion-analysis {
   padding: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .emotion-analysis h3 {
@@ -455,6 +795,8 @@
 
 .diary-entry-full {
   padding: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .entry-header-full {
@@ -494,18 +836,18 @@
 }
 
 .mood-badge-large.green {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success-bg);
+  color: var(--success);
 }
 
 .mood-badge-large.yellow {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .mood-badge-large.red {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .intensity-badge {
@@ -575,51 +917,186 @@
 }
 
 .content-section.sensitive {
-  background: #fff3cd;
+  background: var(--warning-bg);
   padding: 16px;
   border-radius: 12px;
   border-left: 4px solid var(--warning);
 }
 
-.content-section.sensitive strong {
-  color: #856404;
-}
-
+.content-section.sensitive strong,
 .content-section.sensitive p {
-  color: #856404;
+  color: var(--warning);
 }
 
 /* ============================================
-   TAB: AUTOCUIDADO (SELFCARE)
+   TAB: AUTOCUIDADO (SELFCARE) - COMPLETO
    ============================================ */
 
 .selfcare-tab {
   min-height: 400px;
 }
 
-.selfcare-content {
-  min-height: 400px;
+.selfcare-content-full {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
-.selfcare-content .card {
-  padding: 60px 40px;
-  text-align: center;
+.selfcare-summary {
+  padding: 25px;
   background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
-.selfcare-content .card h3 {
+.selfcare-summary h3 {
   margin: 0 0 20px 0;
   color: var(--text-primary);
-  font-size: 1.8rem;
   font-weight: 700;
 }
 
-.selfcare-content .card p {
+.selfcare-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.selfcare-stat {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: var(--bg-light);
+  border-radius: 12px;
+}
+
+.stat-icon-small {
+  font-size: 2rem;
+}
+
+.stat-number-small {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stat-label-small {
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  font-size: 1.2rem;
-  margin: 0;
-  line-height: 1.8;
-  font-weight: 400;
+  font-weight: 500;
+}
+
+/* Progreso por Tarea */
+.selfcare-tasks {
+  padding: 25px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.selfcare-tasks h3 {
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.task-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-progress-item {
+  display: grid;
+  grid-template-columns: 200px 1fr 60px;
+  align-items: center;
+  gap: 15px;
+}
+
+.task-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.task-bar-container {
+  background: var(--bg-light);
+  border-radius: 8px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.task-bar-fill {
+  background: var(--primary-gradient);
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+.task-count {
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: right;
+  font-size: 1rem;
+}
+
+/* Calendario */
+.selfcare-calendar {
+  padding: 25px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.selfcare-calendar h3 {
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.calendar-day:hover {
+  transform: scale(1.1);
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legend-item span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
 /* ============================================
@@ -631,6 +1108,8 @@
   text-align: center;
   padding: 60px 20px;
   color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .no-permission svg,
@@ -679,167 +1158,6 @@
 }
 
 /* ============================================
-   DARK MODE SUPPORT
-   ============================================ */
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #f8f9fa;
-    --text-secondary: #b2bec3;
-    --text-light: #636e72;
-    --bg-light: #2d3436;
-    --bg-card: #34495e;
-    --border-color: #4a5568;
-  }
-
-  body {
-    background: #1a1a1a;
-  }
-
-  .patient-record {
-    background: #1a1a1a;
-  }
-
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-  }
-
-  .record-header {
-    background: var(--bg-card);
-  }
-
-  .back-button {
-    background: var(--bg-light);
-    color: var(--text-primary);
-  }
-
-  .back-button:hover {
-    background: var(--primary-color);
-    color: white;
-  }
-
-  .btn-secondary {
-    background: var(--bg-light);
-    color: var(--text-primary);
-  }
-
-  .btn-secondary:hover {
-    background: #4a5568;
-  }
-
-  .record-tabs .tab {
-    background: var(--bg-card);
-    border-color: var(--border-color);
-    color: var(--text-secondary);
-  }
-
-  .record-tabs .tab:hover:not(:disabled) {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(102, 126, 234, 0.1);
-  }
-
-  .stat-card {
-    background: var(--bg-card);
-  }
-
-  .stat-icon {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-  }
-
-  .emotions-chart,
-  .emotions-chart-large,
-  .emotion-analysis,
-  .recent-entries,
-  .last-session,
-  .diary-entry-full,
-  .selfcare-content .card {
-    background: var(--bg-card);
-  }
-
-  .chart-container,
-  .chart-container-large {
-    background: #2d3436;
-  }
-
-  .entry-preview {
-    border-bottom-color: var(--border-color);
-  }
-
-  .emotion-tag,
-  .bar-container {
-    background: var(--bg-light);
-    color: var(--text-primary);
-  }
-
-  .content-section.highlight {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-    border-left-color: var(--primary-color);
-  }
-
-  .content-section.sensitive {
-    background: rgba(253, 203, 110, 0.15);
-    border-left-color: var(--warning);
-  }
-
-  .content-section.sensitive strong,
-  .content-section.sensitive p {
-    color: #fdcb6e;
-  }
-
-  .no-permission svg,
-  .no-data svg {
-    color: #636e72;
-  }
-
-  .mood-badge.green {
-    background: rgba(0, 184, 148, 0.2);
-    color: #00b894;
-  }
-
-  .mood-badge.yellow {
-    background: rgba(253, 203, 110, 0.2);
-    color: #fdcb6e;
-  }
-
-  .mood-badge.red {
-    background: rgba(214, 48, 49, 0.2);
-    color: #ff7675;
-  }
-
-  .mood-badge-large.green {
-    background: rgba(0, 184, 148, 0.2);
-    color: #00b894;
-  }
-
-  .mood-badge-large.yellow {
-    background: rgba(253, 203, 110, 0.2);
-    color: #fdcb6e;
-  }
-
-  .mood-badge-large.red {
-    background: rgba(214, 48, 49, 0.2);
-    color: #ff7675;
-  }
-
-  .status-badge-large.active {
-    background: rgba(0, 184, 148, 0.2);
-    color: #00b894;
-  }
-
-  .status-badge-large.pending {
-    background: rgba(253, 203, 110, 0.2);
-    color: #fdcb6e;
-  }
-
-  .intensity-badge {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-    color: #a29bfe;
-  }
-}
-
-/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
@@ -857,9 +1175,17 @@
     grid-template-columns: 120px 1fr 40px;
     gap: 10px;
   }
+
+  .task-progress-item {
+    grid-template-columns: 160px 1fr 50px;
+  }
 }
 
 @media (max-width: 768px) {
+  .patients-grid {
+    grid-template-columns: 1fr;
+  }
+
   .patient-record {
     padding: 15px;
   }
@@ -944,16 +1270,26 @@
     padding: 6px 12px;
   }
 
-  .selfcare-content .card {
-    padding: 40px 20px;
+  .selfcare-stats-grid {
+    grid-template-columns: 1fr;
   }
 
-  .selfcare-content .card h3 {
-    font-size: 1.4rem;
+  .task-progress-item {
+    grid-template-columns: 140px 1fr 50px;
+    gap: 10px;
   }
 
-  .selfcare-content .card p {
-    font-size: 1rem;
+  .task-name {
+    font-size: 0.85rem;
+  }
+
+  .calendar-grid {
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+    gap: 6px;
+  }
+
+  .calendar-day {
+    font-size: 0.8rem;
   }
 }
 
@@ -982,11 +1318,16 @@
     grid-template-columns: 80px 1fr 30px;
   }
 
-  .selfcare-content .card h3 {
-    font-size: 1.2rem;
+  .task-progress-item {
+    grid-template-columns: 120px 1fr 40px;
   }
 
-  .selfcare-content .card p {
-    font-size: 0.95rem;
+  .permissions-tags {
+    flex-direction: column;
+  }
+
+  .permission-tag {
+    width: 100%;
+    text-align: center;
   }
 }
